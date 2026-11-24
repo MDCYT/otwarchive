@@ -52,7 +52,7 @@
                 <%= link_to strip_tags(ticket.summary), admin_support_ticket_path(ticket), style: "font-weight:bold;" %>
                 <% if ticket.reported_url.present? %>
                   <div style="font-size:0.8em; color:#666; margin-top:2px; word-break:break-all;">
-                    🔗 <%= truncate(ticket.reported_url, length: 50) %>
+                    URL: <%= truncate(ticket.reported_url, length: 50) %>
                   </div>
                 <% end %>
               </td>

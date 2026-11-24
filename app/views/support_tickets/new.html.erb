@@ -16,19 +16,19 @@
     <li>
       <% if @ticket_type == 'technical' %>
         <span class="current" style="font-weight:bold; background:#e8f4fd; color:#0d47a1; border:1px solid #b6d4fe; padding:4px 12px; border-radius:3px;">
-          🛠️ <%= t("support_tickets.type.technical", default: "Technical Support & Feedback") %>
+          <%= t("support_tickets.type.technical", default: "Technical Support & Feedback") %>
         </span>
       <% else %>
-        <%= link_to "🛠️ #{t('support_tickets.type.technical', default: 'Technical Support & Feedback')}", new_ticket_path(type: 'technical') %>
+        <%= link_to "#{t('support_tickets.type.technical', default: 'Technical Support & Feedback')}", new_ticket_path(type: 'technical') %>
       <% end %>
     </li>
     <li>
       <% if @ticket_type == 'abuse' %>
         <span class="current" style="font-weight:bold; background:#fbe9e7; color:#b71c1c; border:1px solid #ffccbc; padding:4px 12px; border-radius:3px;">
-          🛡️ <%= t("support_tickets.type.abuse", default: "Policy Questions & Abuse Reports") %>
+          <%= t("support_tickets.type.abuse", default: "Policy Questions & Abuse Reports") %>
         </span>
       <% else %>
-        <%= link_to "🛡️ #{t('support_tickets.type.abuse', default: 'Policy Questions & Abuse Reports')}", new_ticket_path(type: 'abuse') %>
+        <%= link_to "#{t('support_tickets.type.abuse', default: 'Policy Questions & Abuse Reports')}", new_ticket_path(type: 'abuse') %>
       <% end %>
     </li>
     <li style="margin-left:auto;">

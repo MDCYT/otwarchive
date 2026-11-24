@@ -1,4 +1,11 @@
 class SupportMailer < ApplicationMailer
+  helper :application
+  helper :mailer
+  include HtmlCleaner
+  include MailerHelper
+
+  default from: "#{ArchiveConfig.APP_NAME} Support <#{ArchiveConfig.RETURN_ADDRESS}>"
+
   def ticket_received(feedback)
     @feedback = feedback
     @ticket_url = "https://support.libreria.org.pe/tickets/#{feedback.id}"

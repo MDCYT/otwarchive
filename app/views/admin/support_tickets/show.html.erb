@@ -16,7 +16,7 @@
         <li class="comment group" style="background:#fff; border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:4px;">
           <% if @feedback.abuse? || @feedback.reported_url.present? %>
             <div style="background:#fff3f3; border:1px solid #f5c6cb; border-left:4px solid #900; padding:10px 14px; margin-bottom:15px; border-radius:3px;">
-              <strong style="color:#900;">🛡️ <%= t("admin.support_tickets.show.abuse_alert", default: "Policy & Abuse Report") %></strong>
+              <strong style="color:#900;"><%= t("admin.support_tickets.show.abuse_alert", default: "Policy & Abuse Report") %></strong>
               <% if @feedback.reported_url.present? %>
                 <div style="margin-top:6px; word-break:break-all;">
                   <strong><%= t("admin.support_tickets.show.reported_url", default: "Reported URL / Work") %>:</strong>
@@ -135,9 +135,9 @@
         <p style="margin:6px 0;">
           <strong><%= t("admin.support_tickets.show.type", default: "Ticket Type:") %></strong>
           <% if @feedback.abuse? %>
-            <span style="background:#900; color:#fff; font-size:0.8em; padding:2px 6px; border-radius:3px; font-weight:bold;">🛡️ Policy & Abuse</span>
+            <span style="background:#900; color:#fff; font-size:0.8em; padding:2px 6px; border-radius:3px; font-weight:bold;">Policy & Abuse</span>
           <% else %>
-            <span style="background:#0277bd; color:#fff; font-size:0.8em; padding:2px 6px; border-radius:3px; font-weight:bold;">🛠️ Technical Support</span>
+            <span style="background:#0277bd; color:#fff; font-size:0.8em; padding:2px 6px; border-radius:3px; font-weight:bold;">Technical Support</span>
           <% end %>
         </p>
         <p style="margin:6px 0;">
