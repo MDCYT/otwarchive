@@ -1,16 +1,14 @@
 <% content_for :message do %>
-  <p>Se ha recibido una nueva solicitud de soporte:</p>
-  <ul>
-    <li><strong>Ticket ID:</strong> #<%= @feedback.id %></li>
-    <li><strong>Solicitante:</strong> <%= @feedback.username.presence || "Anónimo / No registrado" %> (<%= @feedback.email %>)</li>
-    <li><strong>Asunto:</strong> <%= strip_tags(@feedback.summary) %></li>
-    <li><strong>Categoría:</strong> <%= @feedback.category.presence || "General" %></li>
-    <li><strong>Idioma:</strong> <%= @feedback.language %></li>
-  </ul>
-  <div style="background:#f9f9f9; border-left:4px solid #900; padding:12px; margin:16px 0;">
+  <p>A new support request has been submitted:</p>
+  <p><strong>Ticket #<%= @feedback.id %>:</strong> <%= strip_tags(@feedback.summary) %></p>
+  <p><strong>Requester:</strong> <%= @feedback.username.presence || "Guest" %> &lt;<%= @feedback.email %>&gt;</p>
+  <p><strong>Category:</strong> <%= @feedback.category.presence || "General" %></p>
+  <p><strong>Language:</strong> <%= @feedback.language %></p>
+  <div style="background:#f9f9f9; border-left:4px solid #333; padding:12px; margin:16px 0;">
     <%= raw sanitize_field(@feedback, :comment) %>
   </div>
-  <p><a href="<%= @admin_url %>">Ver y responder en el Panel de Administración</a></p>
+  <p>To view and respond to this ticket, visit the support panel:</p>
+  <p><a href="<%= @admin_url %>"><%= @admin_url %></a></p>
 <% end %>
 <% content_for :sent_at do %>
   <%= l(Time.current) %>

@@ -1,7 +1,7 @@
 class SupportMailer < ApplicationMailer
   def ticket_received(feedback)
     @feedback = feedback
-    @ticket_url = "https://soporte.libreria.org.pe/tickets/#{feedback.id}"
+    @ticket_url = "https://support.libreria.org.pe/tickets/#{feedback.id}"
     mail(
       to: feedback.email,
       subject: "[Ticket ##{feedback.id}] #{strip_html(feedback.summary)}"
@@ -11,7 +11,7 @@ class SupportMailer < ApplicationMailer
   def staff_replied(feedback, reply)
     @feedback = feedback
     @reply = reply
-    @ticket_url = "https://soporte.libreria.org.pe/tickets/#{feedback.id}"
+    @ticket_url = "https://support.libreria.org.pe/tickets/#{feedback.id}"
     mail(
       to: feedback.email,
       subject: "Re: [Ticket ##{feedback.id}] #{strip_html(feedback.summary)}"
@@ -24,7 +24,7 @@ class SupportMailer < ApplicationMailer
     recipient = ArchiveConfig.ADMIN_ADDRESS.presence || "admin@libreria.org.pe"
     mail(
       to: recipient,
-      subject: "[Soporte AO3] Nueva solicitud: #{strip_html(feedback.summary)} (#{feedback.username.presence || feedback.email})"
+      subject: "[AO3 Support] New Ticket ##{feedback.id}: #{strip_html(feedback.summary)} (#{feedback.username.presence || feedback.email})"
     )
   end
 
@@ -35,7 +35,7 @@ class SupportMailer < ApplicationMailer
     recipient = feedback.assigned_to&.email || ArchiveConfig.ADMIN_ADDRESS.presence || "admin@libreria.org.pe"
     mail(
       to: recipient,
-      subject: "[Soporte AO3] Respuesta de usuario en Ticket ##{feedback.id}: #{strip_html(feedback.summary)}"
+      subject: "[AO3 Support] User Reply on Ticket ##{feedback.id}: #{strip_html(feedback.summary)}"
     )
   end
 

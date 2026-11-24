@@ -1,35 +1,32 @@
-<div class="support-my-tickets">
-  <h2 class="heading">Mis Solicitudes de Soporte</h2>
+<div class="support-tickets wrapper" style="max-width:1050px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
+  <h2 class="heading"><%= t("support_tickets.index.page_title") %></h2>
 
-  <ul class="navigation actions" role="navigation">
-    <li><%= link_to "Nueva solicitud", new_ticket_path %></li>
-    <li><%= link_to "Centro de Ayuda", root_path %></li>
-    <li><%= link_to "Volver al Archivo", "https://libreria.org.pe" %></li>
+  <ul class="navigation actions" role="navigation" style="margin-bottom:1.5em;">
+    <li><%= link_to t("support_tickets.index.submit_new"), new_ticket_path %></li>
+    <li><%= link_to t("support_tickets.index.back_home"), support_root_path rescue link_to("Help Center", "/") %></li>
+    <li><%= link_to t("support.home.nav.back_to_archive"), "https://libreria.org.pe" %></li>
   </ul>
 
   <% if @tickets.any? %>
     <div class="wrapper">
-      <table summary="Lista de solicitudes de soporte enviadas">
-        <caption>Tus solicitudes registradas</caption>
+      <table summary="List of your support requests">
+        <caption><%= t("support_tickets.index.caption") %></caption>
         <thead>
           <tr>
-            <th scope="col" style="width:70px;">ID</th>
-            <th scope="col">Asunto</th>
-            <th scope="col" style="width:150px;">Categoría</th>
-            <th scope="col" style="width:140px;">Fecha</th>
-            <th scope="col" style="width:120px;">Estado</th>
-            <th scope="col" style="width:100px;">Acción</th>
+            <th scope="col" style="width:70px;"><%= t("support_tickets.index.id") %></th>
+            <th scope="col"><%= t("support_tickets.index.subject") %></th>
+            <th scope="col" style="width:140px;"><%= t("support_tickets.index.category") %></th>
+            <th scope="col" style="width:120px;"><%= t("support_tickets.index.status") %></th>
+            <th scope="col" style="width:140px;"><%= t("support_tickets.index.last_updated") %></th>
+            <th scope="col" style="width:100px;"><%= t("support_tickets.index.action") %></th>
           </tr>
         </thead>
         <tbody>
           <% @tickets.each do |ticket| %>
             <tr>
               <td><strong>#<%= ticket.id %></strong></td>
-              <td>
-                <%= link_to strip_tags(ticket.summary), ticket_path(ticket), style: "font-weight:bold;" %>
-              </td>
+              <td><%= link_to strip_tags(ticket.summary), ticket_path(ticket), style: "font-weight:bold;" %></td>
               <td><%= ticket.category.presence || "General" %></td>
-              <td><%= l(ticket.created_at, format: :short) %></td>
               <td>
                 <% badge_color = case ticket.status
                    when 'open' then '#2e7d32'
@@ -37,32 +34,23 @@
                    when 'answered' then '#0d47a1'
                    when 'closed' then '#616161'
                    else '#2e7d32' end %>
-                <span style="display:inline-block; padding:2px 8px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
+                <span style="display:inline-block; padding:2px 7px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
                   <%= ticket.status_label %>
                 </span>
               </td>
-              <td>
-                <%= link_to "Ver detalle", ticket_path(ticket), class: "actions" %>
-              </td>
+              <td><%= l(ticket.updated_at, format: :short) rescue ticket.updated_at.to_s(:short) %></td>
+              <td><%= link_to t("support_tickets.index.view"), ticket_path(ticket), class: "actions" %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
   <% else %>
-    <div class="module" style="background:#fff; border:1px solid #ddd; padding:2em; margin:1.5em 0; text-align:center;">
-      <h3 class="heading" style="color:#555;">No se encontraron solicitudes registradas</h3>
-      <p style="margin:1em 0;">No tienes solicitudes activas asociadas a tu sesión actual.</p>
-      <% unless logged_in? %>
-        <p style="background:#fdf8f8; border:1px solid #e0c0c0; padding:12px; max-width:500px; margin:1em auto; border-radius:3px;">
-          ¿Enviaste un ticket con tu cuenta de AO3?
-          <%= link_to "Inicia sesión con tu cuenta de AO3", new_user_session_path, style: "font-weight:bold; color:#900;" %>
-          para ver todo tu historial de soporte.
-        </p>
-      <% end %>
-      <p class="actions" style="margin-top:1.5em;">
-        <%= link_to "Crear una nueva solicitud de soporte", new_ticket_path, class: "button submit" %>
-      </p>
-    </div>
+    <p class="notice" style="margin-top:1.5em;">
+      <%= t("support_tickets.index.no_tickets") %>
+    </p>
+    <p class="actions" style="margin-top:1.2em;">
+      <%= link_to t("support_tickets.index.submit_new"), new_ticket_path, class: "button submit" %>
+    </p>
   <% end %>
 </div>

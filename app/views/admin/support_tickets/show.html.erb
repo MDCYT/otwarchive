@@ -1,6 +1,6 @@
-<div class="admin">
-  <p class="navigation actions" style="margin-bottom:1em;">
-    <%= link_to "&laquo; Volver al listado de tickets".html_safe, admin_support_tickets_path %>
+<div class="admin wrapper" style="max-width:1150px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
+  <p class="navigation actions" style="margin-bottom:1.2em;">
+    <%= link_to t("admin.support_tickets.show.back_to_panel").html_safe, admin_support_tickets_path %>
   </p>
 
   <h2 class="heading">
@@ -8,30 +8,30 @@
   </h2>
 
   <div style="display:flex; flex-wrap:wrap; gap:20px; margin-bottom:2em;">
-    <!-- Columna Izquierda: Conversación y Respuestas -->
+    <!-- Left Column: Messages and Reply Form -->
     <div style="flex:2; min-width:320px;">
-      <h3 class="heading">Historial de mensajes</h3>
+      <h3 class="heading"><%= t("admin.support_tickets.show.conversation") %></h3>
       <ol class="comment group" style="list-style:none; padding:0; margin:0 0 2em 0;">
-        <!-- Mensaje original -->
+        <!-- Initial Message -->
         <li class="comment group" style="background:#fff; border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:4px;">
           <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:8px;">
             <strong><%= @feedback.username.presence || @feedback.email %></strong>
-            <span style="color:#666; font-size:0.85em;">(Solicitud inicial)</span>
-            <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(@feedback.created_at) %></span>
+            <span style="color:#666; font-size:0.85em;">(<%= t("admin.support_tickets.show.initial_request") %>)</span>
+            <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(@feedback.created_at, format: :short) rescue @feedback.created_at.to_s(:short) %></span>
           </h4>
           <div class="userstuff" style="margin-top:10px;">
             <%= raw @feedback.comment %>
           </div>
         </li>
 
-        <!-- Respuestas y Notas -->
+        <!-- Replies and Notes -->
         <% @replies.each do |reply| %>
           <% if reply.is_internal? %>
             <li class="comment group" style="background:#fffbe6; border:1px solid #ffe58f; border-left:5px solid #faad14; padding:15px; margin-bottom:15px; border-radius:4px;">
               <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #fff1b8; padding-bottom:8px;">
-                <span style="background:#faad14; color:#fff; padding:2px 6px; border-radius:3px; font-size:0.8em; font-weight:bold;">NOTA INTERNA (Solo Equipo)</span>
+                <span style="background:#faad14; color:#fff; padding:2px 6px; border-radius:3px; font-size:0.8em; font-weight:bold;"><%= t("admin.support_tickets.show.internal_note_badge") %></span>
                 <strong><%= reply.author_name %></strong>
-                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at) %></span>
+                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
               </h4>
               <div class="userstuff" style="margin-top:10px;">
                 <%= raw sanitize_field(reply, :comment) %>
@@ -40,9 +40,9 @@
           <% elsif reply.staff? %>
             <li class="comment group" style="background:#fdf9f9; border:1px solid #e0c8c8; border-left:5px solid #900; padding:15px; margin-bottom:15px; border-radius:4px;">
               <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #f0dede; padding-bottom:8px;">
-                <span style="background:#900; color:#fff; padding:2px 7px; border-radius:3px; font-size:0.8em; font-weight:bold;">Respuesta de Soporte</span>
+                <span style="background:#900; color:#fff; padding:2px 7px; border-radius:3px; font-size:0.8em; font-weight:bold;"><%= t("admin.support_tickets.show.staff_response_badge") %></span>
                 <strong><%= reply.author_name %></strong>
-                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at) %></span>
+                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
               </h4>
               <div class="userstuff" style="margin-top:10px;">
                 <%= raw sanitize_field(reply, :comment) %>
@@ -52,7 +52,7 @@
             <li class="comment group" style="background:#fff; border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:4px;">
               <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:8px;">
                 <strong><%= reply.author_name %></strong>
-                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at) %></span>
+                <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
               </h4>
               <div class="userstuff" style="margin-top:10px;">
                 <%= raw sanitize_field(reply, :comment) %>
@@ -62,105 +62,105 @@
         <% end %>
       </ol>
 
-      <!-- Formulario de Respuesta para Soporte -->
-      <div class="module post comment" style="background:#fff; border:1px solid #ccc; padding:1.5em; border-radius:4px;">
-        <h3 class="heading" style="margin-top:0;">Responder al Ticket</h3>
+      <!-- Staff Reply Box -->
+      <div class="module post comment" style="background:#fff; border:1px solid #ccc; padding:1.5em; border-radius:4px; box-sizing:border-box;">
+        <h3 class="heading" style="margin-top:0;"><%= t("admin.support_tickets.show.reply_heading") %></h3>
 
         <%= form_for @reply, url: reply_admin_support_ticket_path(@feedback) do |f| %>
           <div style="margin-bottom:1em; background:#f9f9f9; padding:8px 12px; border:1px solid #e5e5e5; border-radius:3px;">
             <label style="margin-right:20px; font-weight:normal;">
               <%= f.radio_button :is_internal, "0", checked: true %>
-              <strong>Respuesta pública al usuario</strong> (se notificará por correo electrónico)
+              <strong><%= t("admin.support_tickets.show.reply_type_public") %></strong>
             </label>
             <label style="font-weight:normal;">
               <%= f.radio_button :is_internal, "1" %>
-              <strong style="color:#b78103;">Nota interna</strong> (solo visible para administradores)
+              <strong style="color:#b78103;"><%= t("admin.support_tickets.show.reply_type_internal") %></strong>
             </label>
           </div>
 
           <p>
-            <%= f.text_area :comment, rows: 8, cols: 60, placeholder: "Escribe tu respuesta aquí...", required: true, style: "width:100%; box-sizing:border-box;" %>
+            <%= f.text_area :comment, rows: 8, cols: 60, placeholder: t("support_tickets.show.reply_placeholder"), required: true, style: "width:100%; box-sizing:border-box;" %>
           </p>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1em; flex-wrap:wrap; gap:10px;">
             <div>
-              <label for="next_status" style="margin-right:6px;">Cambiar estado a:</label>
+              <label for="next_status" style="margin-right:6px;"><%= t("admin.support_tickets.show.next_status") %></label>
               <%= select_tag :next_status, options_for_select([
-                ["Respondido", "answered"],
-                ["En espera del usuario", "pending"],
-                ["Resuelto / Cerrado", "closed"],
-                ["Abierto", "open"]
+                [t("support_tickets.statuses.answered"), "answered"],
+                [t("support_tickets.statuses.pending"), "pending"],
+                [t("support_tickets.statuses.closed"), "closed"],
+                [t("support_tickets.statuses.open"), "open"]
               ], "answered") %>
             </div>
-            <%= f.submit "Enviar respuesta", class: "submit button" %>
+            <%= f.submit t("admin.support_tickets.show.send_reply"), class: "submit button" %>
           </div>
         <% end %>
       </div>
     </div>
 
-    <!-- Columna Derecha: Metadatos y Asignación -->
+    <!-- Right Column: Metadata and Assignment -->
     <div style="flex:1; min-width:260px;">
-      <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px; margin-bottom:1.5em;">
-        <h4 class="heading" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:6px;">Estado y Asignación</h4>
+      <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px; margin-bottom:1.5em; box-sizing:border-box;">
+        <h4 class="heading" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:6px;"><%= t("admin.support_tickets.show.admin_management") %></h4>
 
-        <!-- Formulario Estado -->
+        <!-- Update Status -->
         <%= form_tag update_status_admin_support_ticket_path(@feedback), method: :patch, style: "margin-bottom:1.2em;" do %>
-          <p style="margin-bottom:4px;"><strong>Estado actual:</strong></p>
+          <p style="margin-bottom:4px;"><strong><%= t("admin.support_tickets.show.status_label") %></strong></p>
           <div style="display:flex; gap:6px;">
             <%= select_tag :status, options_for_select([
-              ["Abierto", "open"],
-              ["En espera", "pending"],
-              ["Respondido", "answered"],
-              ["Resuelto / Cerrado", "closed"]
+              [t("support_tickets.statuses.open"), "open"],
+              [t("support_tickets.statuses.pending"), "pending"],
+              [t("support_tickets.statuses.answered"), "answered"],
+              [t("support_tickets.statuses.closed"), "closed"]
             ], @feedback.status), style: "flex:1;" %>
-            <%= submit_tag "Guardar", class: "button" %>
+            <%= submit_tag t("admin.support_tickets.show.save_status"), class: "button" %>
           </div>
         <% end %>
 
-        <!-- Formulario Asignar -->
+        <!-- Assign Admin -->
         <%= form_tag assign_admin_support_ticket_path(@feedback), method: :patch do %>
-          <p style="margin-bottom:4px;"><strong>Asignado a:</strong></p>
+          <p style="margin-bottom:4px;"><strong><%= t("admin.support_tickets.show.assigned_label") %></strong></p>
           <div style="display:flex; gap:6px;">
-            <%= select_tag :admin_id, options_from_collection_for_select(@admins, :id, :login, @feedback.assigned_to_id), prompt: "Sin asignar", style: "flex:1;" %>
-            <%= submit_tag "Asignar", class: "button" %>
+            <%= select_tag :admin_id, options_from_collection_for_select(@admins, :id, :login, @feedback.assigned_to_id), prompt: t("admin.support_tickets.show.unassigned"), style: "flex:1;" %>
+            <%= submit_tag t("admin.support_tickets.show.assign_button"), class: "button" %>
           </div>
         <% end %>
       </div>
 
-      <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
-        <h4 class="heading" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:6px;">Detalles del Solicitante</h4>
+      <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px; box-sizing:border-box;">
+        <h4 class="heading" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:6px;"><%= t("admin.support_tickets.show.requester_info") %></h4>
         <dl style="margin:0;">
-          <dt><strong>Usuario:</strong></dt>
+          <dt><strong><%= t("admin.support_tickets.show.user_account") %>:</strong></dt>
           <dd style="margin-bottom:8px;">
             <% if @user %>
               <%= link_to @user.login, user_path(@user) %>
             <% elsif @feedback.username.present? %>
-              <%= @feedback.username %> (no vinculado)
+              <%= @feedback.username %> (<%= t("admin.support_tickets.show.guest") %>)
             <% else %>
-              <span style="color:#888;">No especificado</span>
+              <span style="color:#888;"><%= t("admin.support_tickets.show.guest") %></span>
             <% end %>
           </dd>
 
-          <dt><strong>Correo electrónico:</strong></dt>
+          <dt><strong><%= t("admin.support_tickets.show.email") %></strong></dt>
           <dd style="margin-bottom:8px;">
             <a href="mailto:<%= @feedback.email %>"><%= @feedback.email %></a>
           </dd>
 
-          <dt><strong>Categoría:</strong></dt>
+          <dt><strong><%= t("admin.support_tickets.show.category") %></strong></dt>
           <dd style="margin-bottom:8px;"><%= @feedback.category.presence || "General" %></dd>
 
-          <dt><strong>Idioma:</strong></dt>
+          <dt><strong><%= t("admin.support_tickets.show.language") %></strong></dt>
           <dd style="margin-bottom:8px;"><%= @feedback.language %></dd>
 
-          <dt><strong>Fecha creación:</strong></dt>
-          <dd style="margin-bottom:8px;"><%= l(@feedback.created_at) %></dd>
+          <dt><strong><%= t("admin.support_tickets.show.created_at") %></strong></dt>
+          <dd style="margin-bottom:8px;"><%= l(@feedback.created_at, format: :short) rescue @feedback.created_at.to_s(:short) %></dd>
 
-          <dt><strong>IP del usuario:</strong></dt>
-          <dd style="margin-bottom:8px;"><code><%= @feedback.ip_address.presence || "No registrada" %></code></dd>
+          <dt><strong><%= t("admin.support_tickets.show.ip") %></strong></dt>
+          <dd style="margin-bottom:8px;"><code><%= @feedback.ip_address.presence || "N/A" %></code></dd>
 
-          <dt><strong>User-Agent:</strong></dt>
+          <dt><strong><%= t("admin.support_tickets.show.user_agent") %></strong></dt>
           <dd style="margin-bottom:8px; word-break:break-all; font-size:0.85em; color:#555;">
-            <%= @feedback.user_agent.presence || "No registrado" %>
+            <%= @feedback.user_agent.presence || "N/A" %>
           </dd>
         </dl>
       </div>

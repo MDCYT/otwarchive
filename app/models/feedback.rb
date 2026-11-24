@@ -38,13 +38,7 @@ class Feedback < ApplicationRecord
   end
 
   def status_label
-    case status
-    when "open" then "Abierto"
-    when "pending" then "En espera"
-    when "answered" then "Respondido"
-    when "closed" then "Resuelto"
-    else (status || "Abierto").titleize
-    end
+    I18n.t("support_tickets.statuses.#{status}", default: status.to_s.capitalize)
   end
 
   def check_for_spam

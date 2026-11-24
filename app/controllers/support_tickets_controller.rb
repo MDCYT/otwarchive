@@ -3,7 +3,7 @@ class SupportTicketsController < ApplicationController
   before_action :authorize_ticket_access, only: [:show, :reply, :close]
 
   def index
-    @page_title = "Mis Solicitudes de Soporte"
+    @page_title = t("support_tickets.index.page_title")
     if current_user
       @tickets = Feedback.where("user_id = ? OR email = ? OR username = ?", current_user.id, current_user.email, current_user.login)
                          .order(updated_at: :desc)
@@ -15,12 +15,16 @@ class SupportTicketsController < ApplicationController
   end
 
   def new
-    @page_title = "Enviar una solicitud de soporte"
+    @page_title = t("feedbacks.new.heading.page_title")
+    @admin_setting = AdminSetting.default
+    @support_languages = Language.where(support_available: true).default_order rescue Language.all
+    @support_languages = Language.all if @support_languages.blank?
+    @support_notice = SupportNotice.current_notice rescue nil
     @feedback = Feedback.new
     @feedback.username = current_user.login if current_user
     @feedback.email = current_user.email if current_user
     @feedback.language = Language.default&.name || "English"
-    @support_languages = Language.where(support_available: true).default_order rescue Language.all
+    @open_tickets_count = current_user ? Feedback.where(user_id: current_user.id, status: %w[open pending answered]).count : 0
   end
 
   def create
@@ -43,17 +47,21 @@ class SupportTicketsController < ApplicationController
         Rails.logger.error("Error sending support emails: #{e.message}")
       end
 
-      flash[:notice] = "Tu solicitud de soporte ha sido enviada con éxito (Ticket ##{@feedback.id}). Nuestro equipo te responderá a la brevedad."
+      flash[:notice] = t("support_tickets.flash.created", id: @feedback.id)
       redirect_to ticket_path(@feedback)
     else
+      @admin_setting = AdminSetting.default
       @support_languages = Language.where(support_available: true).default_order rescue Language.all
-      flash[:error] = "Hubo un problema al enviar tu solicitud. Por favor revisa los campos indicados."
+      @support_languages = Language.all if @support_languages.blank?
+      @support_notice = SupportNotice.current_notice rescue nil
+      @open_tickets_count = current_user ? Feedback.where(user_id: current_user.id, status: %w[open pending answered]).count : 0
+      flash[:error] = t("support_tickets.flash.create_error")
       render :new
     end
   end
 
   def show
-    @page_title = "Ticket ##{@feedback.id}: #{@feedback.summary}"
+    @page_title = t("support_tickets.show.ticket_title", id: @feedback.id, summary: @feedback.summary)
     @replies = @feedback.feedback_replies.public_replies
     @reply = FeedbackReply.new
   end
@@ -61,7 +69,7 @@ class SupportTicketsController < ApplicationController
   def reply
     comment_text = params[:feedback_reply]&.[](:comment)
     if comment_text.blank?
-      flash[:error] = "El mensaje de respuesta no puede estar vacío."
+      flash[:error] = t("support_tickets.flash.reply_empty")
       redirect_to ticket_path(@feedback) and return
     end
 
@@ -80,16 +88,16 @@ class SupportTicketsController < ApplicationController
       rescue => e
         Rails.logger.error("Error sending user reply notification: #{e.message}")
       end
-      flash[:notice] = "Tu respuesta ha sido añadida al ticket."
+      flash[:notice] = t("support_tickets.flash.reply_success")
     else
-      flash[:error] = "No se pudo guardar la respuesta."
+      flash[:error] = t("support_tickets.flash.reply_error")
     end
     redirect_to ticket_path(@feedback)
   end
 
   def close
     @feedback.update(status: "closed")
-    flash[:notice] = "La solicitud ##{@feedback.id} ha sido marcada como resuelta."
+    flash[:notice] = t("support_tickets.flash.closed", id: @feedback.id)
     redirect_to ticket_path(@feedback)
   end
 
@@ -102,7 +110,7 @@ class SupportTicketsController < ApplicationController
   def find_ticket
     @feedback = Feedback.find_by(id: params[:id])
     unless @feedback
-      flash[:error] = "No se encontró la solicitud de soporte solicitada."
+      flash[:error] = t("support_tickets.flash.not_found")
       redirect_to tickets_path and return
     end
   end
@@ -123,7 +131,7 @@ class SupportTicketsController < ApplicationController
       return true
     end
 
-    flash[:error] = "Debes iniciar sesión con tu cuenta de AO3 o verificar tu correo para acceder a este ticket."
+    flash[:error] = t("support_tickets.flash.access_denied")
     redirect_to tickets_path
   end
 end

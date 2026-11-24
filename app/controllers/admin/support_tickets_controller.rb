@@ -3,7 +3,7 @@ class Admin::SupportTicketsController < Admin::BaseController
   before_action :find_ticket, only: [:show, :reply, :update_status, :assign]
 
   def index
-    @page_title = "Panel de Soporte - Solicitudes"
+    @page_title = t("admin.support_tickets.index.page_title")
     @status_filter = params[:status].presence || "all"
     
     @counts = {
@@ -26,7 +26,7 @@ class Admin::SupportTicketsController < Admin::BaseController
   end
 
   def show
-    @page_title = "Soporte: Ticket ##{@feedback.id} - #{@feedback.summary}"
+    @page_title = t("admin.support_tickets.show.page_title", id: @feedback.id, summary: @feedback.summary)
     @replies = @feedback.feedback_replies
     @reply = FeedbackReply.new
     @admins = Admin.all
@@ -38,11 +38,11 @@ class Admin::SupportTicketsController < Admin::BaseController
     is_internal = params[:feedback_reply]&.[](:is_internal) == "1"
 
     if comment_text.blank?
-      flash[:error] = "El mensaje no puede estar vacío."
+      flash[:error] = t("support_tickets.flash.reply_empty")
       redirect_to admin_support_ticket_path(@feedback) and return
     end
 
-    staff_name = "Soporte (#{current_admin.login})"
+    staff_name = "Support (#{current_admin.login})"
     @reply = @feedback.feedback_replies.create(
       admin_id: current_admin.id,
       author_name: staff_name,
@@ -59,12 +59,12 @@ class Admin::SupportTicketsController < Admin::BaseController
         rescue => e
           Rails.logger.error("Error sending staff reply email: #{e.message}")
         end
-        flash[:notice] = "Respuesta enviada al usuario con éxito y notificada por correo."
+        flash[:notice] = t("admin.support_tickets.flash.reply_success")
       else
-        flash[:notice] = "Nota interna guardada con éxito (no se envió correo al usuario)."
+        flash[:notice] = t("admin.support_tickets.flash.note_success")
       end
     else
-      flash[:error] = "No se pudo guardar la respuesta."
+      flash[:error] = t("support_tickets.flash.reply_error")
     end
 
     redirect_to admin_support_ticket_path(@feedback)
@@ -73,9 +73,9 @@ class Admin::SupportTicketsController < Admin::BaseController
   def update_status
     if Feedback::STATUSES.include?(params[:status])
       @feedback.update(status: params[:status])
-      flash[:notice] = "Estado del ticket actualizado a '#{@feedback.status_label}'."
+      flash[:notice] = t("admin.support_tickets.flash.status_updated", status: @feedback.status_label)
     else
-      flash[:error] = "Estado no válido."
+      flash[:error] = t("admin.support_tickets.flash.invalid_status")
     end
     redirect_to admin_support_ticket_path(@feedback)
   end
@@ -83,7 +83,7 @@ class Admin::SupportTicketsController < Admin::BaseController
   def assign
     admin = Admin.find_by(id: params[:admin_id])
     @feedback.update(assigned_to: admin)
-    flash[:notice] = admin ? "Ticket asignado a #{admin.login}." : "Ticket desasignado."
+    flash[:notice] = admin ? t("admin.support_tickets.flash.assigned", admin: admin.login) : t("admin.support_tickets.flash.unassigned")
     redirect_to admin_support_ticket_path(@feedback)
   end
 
@@ -92,7 +92,7 @@ class Admin::SupportTicketsController < Admin::BaseController
   def check_support_permission
     policy = SupportTicketPolicy.new(current_admin, Feedback)
     unless policy.index?
-      flash[:error] = "No tienes permiso para acceder al panel de soporte."
+      flash[:error] = t("admin.support_tickets.flash.permission_denied")
       redirect_to admin_path and return
     end
   end
@@ -100,7 +100,7 @@ class Admin::SupportTicketsController < Admin::BaseController
   def find_ticket
     @feedback = Feedback.find_by(id: params[:id])
     unless @feedback
-      flash[:error] = "Ticket no encontrado."
+      flash[:error] = t("support_tickets.flash.not_found")
       redirect_to admin_support_tickets_path and return
     end
   end

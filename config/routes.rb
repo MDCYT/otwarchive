@@ -731,8 +731,8 @@ Rails.application.routes.draw do
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
-    # Support Subdomain & Portal
-  constraints host: /soporte/ do
+    # Support Subdomain & Portal (support.libreria.org.pe and soporte.libreria.org.pe)
+  constraints host: /(support|soporte)/ do
     root to: "support#index", as: :support_root
     resources :tickets, controller: "support_tickets" do
       member do
@@ -744,8 +744,8 @@ Rails.application.routes.draw do
     get "my_tickets", to: "support_tickets#index", as: :my_support_tickets
   end
 
-  scope path: "portal_soporte", as: "portal_soporte" do
-    root to: "support#index"
+  scope path: "support_portal", as: "support_portal" do
+    get "/" => "support#index", as: :root
     resources :tickets, controller: "support_tickets" do
       member do
         post :reply
@@ -754,6 +754,16 @@ Rails.application.routes.draw do
     end
     get "faq", to: "support#faq"
     get "my_tickets", to: "support_tickets#index"
+  end
+
+  scope path: "portal_soporte", as: "portal_soporte" do
+    get "/" => "support#index", as: :legacy_root
+    resources :tickets, controller: "support_tickets" do
+      member do
+        post :reply
+        patch :close
+      end
+    end
   end
 
   root to: "home#index"

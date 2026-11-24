@@ -1,28 +1,28 @@
-<div class="admin">
-  <h2 class="heading">Panel de Soporte - Solicitudes</h2>
+<div class="admin wrapper" style="max-width:1150px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
+  <h2 class="heading"><%= t("admin.support_tickets.index.page_title") %></h2>
 
-  <ul class="navigation actions" role="navigation">
-    <li><%= span_if_current "Todos (#{@counts[:all]})", admin_support_tickets_path %></li>
-    <li><%= span_if_current "Abiertos (#{@counts[:open]})", admin_support_tickets_path(status: 'open') %></li>
-    <li><%= span_if_current "En espera (#{@counts[:pending]})", admin_support_tickets_path(status: 'pending') %></li>
-    <li><%= span_if_current "Respondidos (#{@counts[:answered]})", admin_support_tickets_path(status: 'answered') %></li>
-    <li><%= span_if_current "Resueltos (#{@counts[:closed]})", admin_support_tickets_path(status: 'closed') %></li>
+  <ul class="navigation actions" role="navigation" style="margin-bottom:1.5em;">
+    <li><%= span_if_current t("admin.support_tickets.index.filter_all", count: @counts[:all]), admin_support_tickets_path %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_open", count: @counts[:open]), admin_support_tickets_path(status: 'open') %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_pending", count: @counts[:pending]), admin_support_tickets_path(status: 'pending') %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_answered", count: @counts[:answered]), admin_support_tickets_path(status: 'answered') %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_closed", count: @counts[:closed]), admin_support_tickets_path(status: 'closed') %></li>
   </ul>
 
   <% if @tickets.any? %>
     <div class="wrapper">
-      <table summary="Lista de tickets de soporte para el equipo de administración">
-        <caption>Tickets de soporte (<%= @status_filter.capitalize %>)</caption>
+      <table summary="List of user support tickets for administration and support staff">
+        <caption><%= t("admin.support_tickets.index.caption", filter: @status_filter.capitalize) %></caption>
         <thead>
           <tr>
-            <th scope="col" style="width:60px;">ID</th>
-            <th scope="col" style="width:180px;">Solicitante</th>
-            <th scope="col">Asunto</th>
-            <th scope="col" style="width:140px;">Categoría</th>
-            <th scope="col" style="width:110px;">Estado</th>
-            <th scope="col" style="width:130px;">Asignado a</th>
-            <th scope="col" style="width:120px;">Fecha</th>
-            <th scope="col" style="width:80px;">Acción</th>
+            <th scope="col" style="width:60px;"><%= t("admin.support_tickets.index.id") %></th>
+            <th scope="col" style="width:180px;"><%= t("admin.support_tickets.index.requester") %></th>
+            <th scope="col"><%= t("admin.support_tickets.index.subject") %></th>
+            <th scope="col" style="width:140px;"><%= t("admin.support_tickets.index.category") %></th>
+            <th scope="col" style="width:110px;"><%= t("admin.support_tickets.index.status") %></th>
+            <th scope="col" style="width:130px;"><%= t("admin.support_tickets.index.assigned_to") %></th>
+            <th scope="col" style="width:120px;"><%= t("admin.support_tickets.index.date") %></th>
+            <th scope="col" style="width:90px;"><%= t("admin.support_tickets.index.action") %></th>
           </tr>
         </thead>
         <tbody>
@@ -51,11 +51,11 @@
                 </span>
               </td>
               <td>
-                <%= ticket.assigned_to&.login || content_tag(:span, "Sin asignar", style: "color:#888; font-style:italic;") %>
+                <%= ticket.assigned_to&.login || content_tag(:span, t("admin.support_tickets.index.unassigned"), style: "color:#888; font-style:italic;") %>
               </td>
-              <td><%= l(ticket.created_at, format: :short) %></td>
+              <td><%= l(ticket.created_at, format: :short) rescue ticket.created_at.to_s(:short) %></td>
               <td>
-                <%= link_to "Ver/Atender", admin_support_ticket_path(ticket), class: "actions" %>
+                <%= link_to t("admin.support_tickets.index.action"), admin_support_ticket_path(ticket), class: "actions" %>
               </td>
             </tr>
           <% end %>
@@ -64,6 +64,6 @@
     </div>
     <%= will_paginate @tickets %>
   <% else %>
-    <p class="notice" style="margin-top:1.5em;">No hay tickets de soporte en esta vista.</p>
+    <p class="notice" style="margin-top:1.5em;"><%= t("admin.support_tickets.index.no_tickets") %></p>
   <% end %>
 </div>

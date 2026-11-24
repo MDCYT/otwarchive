@@ -1,75 +1,107 @@
-<div class="support-new-ticket">
-  <h2 class="heading">Enviar una solicitud de soporte</h2>
-
-  <ul class="navigation actions" role="navigation">
-    <li><%= link_to "Centro de Ayuda", root_path %></li>
-    <li><%= link_to "Mis solicitudes", tickets_path %></li>
-  </ul>
-
-  <div class="userstuff" style="margin-bottom:1.5em;">
-    <p>Por favor completa el formulario a continuación con todos los detalles posibles para que el equipo de soporte pueda asistirte con rapidez.</p>
-  </div>
-
+<div class="support-ticket-new wrapper" style="max-width:980px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
   <%= error_messages_for :feedback %>
 
-  <%= form_for(@feedback, url: tickets_path, html: {class: "post feedback"}) do |f| %>
-    <fieldset>
-      <legend>Información de contacto</legend>
-      <dl>
-        <dt><%= f.label :username, "Nombre de usuario en AO3" %></dt>
-        <dd>
-          <%= f.text_field :username, value: (@feedback.username || current_user&.login) %>
-          <p class="footnote">Si tienes una cuenta en el Archivo, indícala para localizar tu usuario.</p>
-        </dd>
+  <h2 class="heading"><%= t("feedbacks.new.heading.page_title") %></h2>
 
-        <dt class="required"><%= f.label :email, "Correo electrónico" %></dt>
-        <dd class="required">
-          <%= f.text_field :email, value: (@feedback.email || current_user&.email), size: 60, required: true %>
-          <p class="footnote">Te enviaremos la confirmación y las respuestas del equipo a esta dirección.</p>
-        </dd>
+  <h4 class="landmark heading"><%= t("feedbacks.new.heading.landmark.reference") %></h4>
+  <ul class="navigation actions" role="navigation" style="margin-bottom:1.5em;">
+    <li><%= link_to t("feedbacks.new.navigation.faqs"), archive_faqs_path %></li>
+    <li><%= link_to t("feedbacks.new.navigation.release_notes"), admin_posts_path(:tag => 1) %></li>
+    <li><%= link_to t("feedbacks.new.navigation.known_issues"), known_issues_path %></li>
+    <li><%= link_to t("support.home.nav.my_requests", count: @open_tickets_count), tickets_path %></li>
+    <li><%= link_to t("support.home.nav.back_to_archive"), "https://libreria.org.pe" %></li>
+  </ul>
 
-        <dt class="required"><%= f.label :category, "Categoría de la consulta" %></dt>
-        <dd class="required">
-          <%= f.select :category, [
-            ["Cuentas e Inicio de sesión", "Cuentas e Inicio de sesión"],
-            ["Obras, Capítulos y Series", "Obras, Capítulos y Series"],
-            ["Etiquetas y Búsqueda", "Etiquetas y Búsqueda"],
-            ["Normas de la Comunidad y Términos de Servicio", "Normas de la Comunidad y Términos de Servicio"],
-            ["Problemas Técnicos o Errores de la Web", "Problemas Técnicos o Errores de la Web"],
-            ["Otras Consultas", "Otras Consultas"]
-          ], { prompt: "Selecciona una categoría..." }, { required: true } %>
-        </dd>
+  <% if @admin_setting&.disable_support_form %>
+    <div class="userstuff">
+      <%= raw sanitize_field(@admin_setting, :disabled_support_form_text) %>
+    </div>
+  <% else %>
+    <h3 class="heading"><%= t("feedbacks.new.heading.instructions") %></h3>
+    <div class="userstuff" style="margin-bottom:1.5em; line-height:1.5;">
+      <p><%= t("feedbacks.new.status.current_html",
+               status_page_link: link_to(t("feedbacks.new.status.status_page"), "https://www.otwstatus.org"),
+               bluesky_link: link_to(t("feedbacks.new.status.bluesky"), "https://bsky.app/profile/status.archiveofourown.org"),
+               tumblr_link: link_to(t("feedbacks.new.status.tumblr"), "https://ao3org.tumblr.com")) %></p>
+      <p><%= t("feedbacks.new.abuse.reports_html", contact_link: link_to(t("feedbacks.new.abuse.contact"), new_abuse_report_path)) %></p>
+      <p><%= t("feedbacks.new.reportable.intro") %></p>
+      <ul>
+        <li><%= t("feedbacks.new.reportable.fnok.concerning_html", fnok_link: link_to(t("feedbacks.new.reportable.fnok.fnok"), archive_faq_path("fannish-next-of-kin"))) rescue nil %></li>
+        <li><%= t("feedbacks.new.reportable.bugs") %></li>
+        <li><%= t("feedbacks.new.reportable.site_questions") %></li>
+        <li><%= t("feedbacks.new.reportable.account_creation") %></li>
+        <li><%= t("feedbacks.new.reportable.lost_access") %></li>
+        <li><%= t("feedbacks.new.reportable.tag_changes") %></li>
+        <li><%= t("feedbacks.new.reportable.new_features") %></li>
+        <li><%= t("feedbacks.new.reportable.orphaned_works") %></li>
+        <li><%= t("feedbacks.new.reportable.work_problems") %></li>
+        <li><%= t("feedbacks.new.reportable.policy_questions") %></li>
+      </ul>
+      <p><%= t("feedbacks.new.do_not_spam_html") %></p>
+      <% if @support_languages.present? %>
+        <p><%= t("feedbacks.new.languages_html", list_html: to_sentence(@support_languages.map { |language| tag.span(language.name, lang: language.short) })) %></p>
+      <% end %>
+    </div>
 
-        <dt class="required"><%= f.label :language, "Idioma de preferencia" %></dt>
-        <dd class="required">
-          <%= f.select :language, language_options_for_select(@support_languages, "name"),
-                { selected: @feedback.language || Language.default&.name || "English" } %>
-        </dd>
-      </dl>
-    </fieldset>
+    <% if @support_notice %>
+      <%= render "admin/support_notices/support_notice", support_notice: @support_notice %>
+    <% end %>
 
-    <fieldset>
-      <legend>Detalles de tu solicitud</legend>
-      <dl>
-        <dt class="required"><%= f.label :summary, "Asunto o título breve" %></dt>
-        <dd class="required">
-          <%= f.text_field :summary, size: 60, required: true, class: "observe_textlength" %>
-          <%= generate_countdown_html("feedback_summary", ArchiveConfig.FEEDBACK_SUMMARY_MAX_DISPLAYED) rescue nil %>
-        </dd>
+    <%= form_for(@feedback, url: tickets_path, html: {class: "post feedback"}) do |f| %>
+      <fieldset>
+        <legend><%= t("feedbacks.new.form.legend.contact_info") %></legend>
+        <dl>
+          <dt><%= f.label :username, t("feedbacks.new.form.name.label") %></dt>
+          <dd>
+            <%= f.text_field :username %>
+          </dd>
+          <dt class="required"><%= f.label :email, t("feedbacks.new.form.email.label") %></dt>
+          <dd class="required">
+            <%= f.text_field :email, size: 60 %>
+          </dd>
+        </dl>
+      </fieldset>
 
-        <dt class="required"><%= f.label :comment, "Mensaje o descripción detallada" %></dt>
-        <dd class="required">
-          <%= f.text_area :comment, cols: 60, rows: 8, required: true, placeholder: "Describe tu problema o consulta con claridad. Incluye enlaces relevantes (a tu obra, perfil, etc.) si corresponde." %>
-        </dd>
-      </dl>
-    </fieldset>
+      <fieldset>
+        <legend><%= t("feedbacks.new.form.legend.feedback") %></legend>
+        <%= f.hidden_field :referer %>
+        <dl>
+          <dt class="required">
+            <%= f.label :language, t("feedbacks.new.form.language.label") %>
+          </dt>
+          <dd class="required">
+            <%= f.select(:language, language_options_for_select(@support_languages, "name"),
+                  { selected: @feedback.language || Language.default&.name || "English" }) %>
+          </dd>
+          <dt class="required">
+            <%= f.label :summary, t("feedbacks.new.form.summary.label") %>
+          </dt>
+          <dd class="required">
+            <%= f.text_field :summary, size: 60, class: "observe_textlength" %>
+            <%= generate_countdown_html("feedback_summary", ArchiveConfig.FEEDBACK_SUMMARY_MAX_DISPLAYED) rescue nil %>
+            <%= live_validation_for_field("feedback_summary",
+                  failureMessage: t("feedbacks.new.form.summary.error")) rescue nil %>
+          </dd>
+          <dt class="required">
+            <%= f.label :comment, t("feedbacks.new.form.comment.label") %>
+          </dt>
+          <dd class="required">
+            <p id="comment-field-description">
+              <%= t("feedbacks.new.form.comment.description") %>
+            </p>
+            <%= f.text_area :comment, cols: 60, "aria-describedby" => "comment-field-description" %>
+            <%= live_validation_for_field("feedback_comment",
+                  failureMessage: t("feedbacks.new.form.comment.error")) rescue nil %>
+          </dd>
+        </dl>
+      </fieldset>
 
-    <fieldset>
-      <legend>Confirmar y enviar</legend>
-      <p class="submit actions">
-        <%= f.submit "Enviar solicitud de soporte", data: { disable_with: "Enviando solicitud..." } %>
-        <%= link_to "Cancelar", root_path, class: "cancel" %>
-      </p>
-    </fieldset>
+      <fieldset>
+        <legend><%= t("feedbacks.new.form.legend.send") %></legend>
+        <p class="submit actions">
+          <%= f.submit t("feedbacks.new.form.submit.active"), data: { disable_with: t("feedbacks.new.form.submit.disabled") } %>
+        </p>
+      </fieldset>
+    <% end %>
   <% end %>
 </div>
