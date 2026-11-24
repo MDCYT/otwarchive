@@ -1,7 +1,7 @@
 <div class="support-ticket-thread wrapper" style="max-width:1050px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
   <p class="navigation actions" style="margin-bottom:1.2em;">
-    <%= link_to t("support_tickets.show.help_center"), support_root_path rescue link_to("Help Center", "/") %> &gt;
-    <%= link_to t("support_tickets.show.back_to_list"), tickets_path %> &gt;
+    <%= link_to t("support_tickets.show.help_center", default: "Help Center"), support_root_path rescue link_to("Help Center", "/") %> &gt;
+    <%= link_to t("support_tickets.show.back_to_list", default: "Support Requests"), tickets_path %> &gt;
     Ticket #<%= @feedback.id %>
   </p>
 
@@ -12,7 +12,7 @@
   <div class="module" style="background:#fbfbfb; border:1px solid #ddd; padding:14px 18px; margin-bottom:1.5em; border-radius:4px; box-sizing:border-box;">
     <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center;">
       <div>
-        <strong><%= t("support_tickets.show.status") %>:</strong>
+        <strong><%= t("support_tickets.show.status", default: "Status") %>:</strong>
         <% badge_color = case @feedback.status
            when 'open' then '#2e7d32'
            when 'pending' then '#e65100'
@@ -23,19 +23,37 @@
           <%= @feedback.status_label %>
         </span>
       </div>
-      <div><strong><%= t("support_tickets.show.category") %>:</strong> <%= @feedback.category.presence || "General" %></div>
-      <div><strong><%= t("support_tickets.show.created") %>:</strong> <%= l(@feedback.created_at, format: :short) rescue @feedback.created_at.to_s(:short) %></div>
-      <div><strong><%= t("support_tickets.show.requester") %>:</strong> <%= @feedback.username.presence || @feedback.email %></div>
+      <div>
+        <strong>Type:</strong>
+        <% if @feedback.abuse? %>
+          <span style="padding:2px 7px; border-radius:3px; background:#900; color:#fff; font-size:0.8em; font-weight:bold;">
+            🛡️ <%= t("support_tickets.type.abuse", default: "Policy & Abuse") %>
+          </span>
+        <% else %>
+          <span style="padding:2px 7px; border-radius:3px; background:#0277bd; color:#fff; font-size:0.8em; font-weight:bold;">
+            🛠️ <%= t("support_tickets.type.technical", default: "Technical Support") %>
+          </span>
+        <% end %>
+      </div>
+      <div><strong><%= t("support_tickets.show.category", default: "Category") %>:</strong> <%= @feedback.category.presence || "General" %></div>
+      <div><strong><%= t("support_tickets.show.created", default: "Created") %>:</strong> <%= l(@feedback.created_at, format: :short) rescue @feedback.created_at.to_s(:short) %></div>
+      <div><strong><%= t("support_tickets.show.requester", default: "Requester") %>:</strong> <%= @feedback.username.presence || @feedback.email %></div>
     </div>
+    <% if @feedback.reported_url.present? %>
+      <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #ddd; word-break:break-all;">
+        <strong><%= t("support_tickets.field.reported_url", default: "Reported URL") %>:</strong>
+        <%= link_to @feedback.reported_url, @feedback.reported_url, target: "_blank", rel: "noopener", style: "font-weight:bold; text-decoration:underline;" %>
+      </div>
+    <% end %>
   </div>
 
-  <h3 class="landmark heading"><%= t("support_tickets.show.conversation") %></h3>
+  <h3 class="landmark heading"><%= t("support_tickets.show.conversation", default: "Conversation History") %></h3>
   <ol class="comment group" style="list-style:none; padding:0; margin:0 0 2em 0;">
     <!-- Original Request -->
     <li class="comment group" style="background:#fff; border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:4px;">
       <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:8px;">
         <strong><%= @feedback.username.presence || @feedback.email %></strong>
-        <span style="color:#666; font-size:0.85em;">(<%= t("support_tickets.show.initial_request") %>)</span>
+        <span style="color:#666; font-size:0.85em;">(<%= t("support_tickets.show.initial_request", default: "Initial Request") %>)</span>
         <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(@feedback.created_at, format: :short) rescue @feedback.created_at.to_s(:short) %></span>
       </h4>
       <div class="userstuff" style="margin-top:10px;">
@@ -45,49 +63,44 @@
 
     <!-- Replies -->
     <% @replies.each do |reply| %>
-      <% if reply.staff? %>
-        <li class="comment group" style="background:#fdf9f9; border:1px solid #e0c8c8; border-left:5px solid #900; padding:15px; margin-bottom:15px; border-radius:4px;">
-          <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #f0dede; padding-bottom:8px;">
-            <span style="background:#900; color:#fff; padding:2px 7px; border-radius:3px; font-size:0.8em; font-weight:bold; margin-right:6px;"><%= t("support_tickets.show.staff_badge") %></span>
+      <% is_staff = reply.staff? %>
+      <li class="comment group" style="background:<%= is_staff ? '#fdf9f9' : '#fff' %>; border:1px solid <%= is_staff ? '#e0c8c8' : '#ddd' %>; border-left:5px solid <%= is_staff ? '#900' : '#4a729a' %>; padding:15px; margin-bottom:15px; border-radius:4px;">
+        <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid <%= is_staff ? '#f0dede' : '#eee' %>; padding-bottom:8px;">
+          <% if is_staff %>
+            <span style="background:#900; color:#fff; padding:2px 7px; border-radius:3px; font-size:0.8em; font-weight:bold;"><%= t("support_tickets.show.staff_badge", default: "AO3 Support Team") %></span>
             <strong><%= reply.author_name %></strong>
-            <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
-          </h4>
-          <div class="userstuff" style="margin-top:10px;">
-            <%= raw sanitize_field(reply, :comment) %>
-          </div>
-        </li>
-      <% else %>
-        <li class="comment group" style="background:#fff; border:1px solid #ddd; padding:15px; margin-bottom:15px; border-radius:4px;">
-          <h4 class="heading byline" style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:8px;">
+          <% else %>
+            <span style="background:#4a729a; color:#fff; padding:2px 7px; border-radius:3px; font-size:0.8em; font-weight:bold;"><%= t("support_tickets.show.user_badge", default: "You") %></span>
             <strong><%= reply.author_name %></strong>
-            <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
-          </h4>
-          <div class="userstuff" style="margin-top:10px;">
-            <%= raw sanitize_field(reply, :comment) %>
-          </div>
-        </li>
-      <% end %>
+          <% end %>
+          <span class="posted datetime" style="float:right; font-size:0.85em; color:#777;"><%= l(reply.created_at, format: :short) rescue reply.created_at.to_s(:short) %></span>
+        </h4>
+        <div class="userstuff" style="margin-top:10px;">
+          <%= raw sanitize_field(reply, :comment) %>
+        </div>
+      </li>
     <% end %>
   </ol>
 
   <!-- Reply Form -->
-  <div class="module post comment" style="background:#fff; border:1px solid #ccc; padding:1.5em; border-radius:4px; box-sizing:border-box;">
-    <h3 class="heading" style="margin-top:0;"><%= t("support_tickets.show.reply_legend") %></h3>
-    
-    <% if @feedback.closed? %>
-      <p class="notice" style="margin-bottom:1em;"><%= t("support_tickets.show.resolved_note") %></p>
-    <% end %>
-
-    <%= form_for @reply, url: reply_ticket_path(@feedback) do |f| %>
-      <p>
-        <%= f.text_area :comment, rows: 6, cols: 60, placeholder: t("support_tickets.show.reply_placeholder"), required: true, style: "width:100%; box-sizing:border-box;" %>
+  <% unless @feedback.closed? %>
+    <div class="module" style="background:#fafafa; border:1px solid #ddd; padding:20px; border-radius:4px;">
+      <h3 class="heading" style="margin-top:0;"><%= t("support_tickets.show.reply_legend", default: "Add a reply to this request") %></h3>
+      <%= form_for @reply, url: reply_ticket_path(@feedback), method: :post, html: {class: "post comment"} do |f| %>
+        <p>
+          <%= f.text_area :comment, rows: 6, cols: 60, required: true, placeholder: t("support_tickets.show.reply_placeholder", default: "Type your reply or additional details here..."), style: "width:100%; box-sizing:border-box; margin-bottom:10px;" %>
+        </p>
+        <p class="submit actions" style="display:flex; justify-content:space-between; align-items:center;">
+          <%= f.submit t("support_tickets.show.submit_reply", default: "Submit Reply") %>
+          <%= link_to t("support_tickets.show.mark_resolved", default: "Mark request as resolved"), close_ticket_path(@feedback), method: :patch, data: { confirm: t("support_tickets.show.resolved_confirm", default: "Are you sure you want to mark this request as resolved?") }, class: "action", style: "color:#777; font-size:0.9em;" %>
+        </p>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="module" style="background:#eee; border:1px solid #ccc; padding:15px; border-radius:4px; text-align:center;">
+      <p style="margin:0; color:#555;">
+        <%= t("support_tickets.show.resolved_note", default: "This ticket has been marked as resolved.") %>
       </p>
-      <p class="submit actions" style="margin-top:1em; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <%= f.submit t("support_tickets.show.submit_reply"), class: "submit button" %>
-        <% unless @feedback.closed? %>
-          <%= link_to t("support_tickets.show.mark_resolved"), close_ticket_path(@feedback), method: :patch, data: { confirm: t("support_tickets.show.resolved_confirm") }, class: "button", style: "color:#666;" %>
-        <% end %>
-      </p>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

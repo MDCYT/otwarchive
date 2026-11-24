@@ -16,6 +16,10 @@ class FeedbackReply < ApplicationRecord
     admin_id.present?
   end
 
+  def update_sanitizer_version
+    # FeedbackReply has no HTML sanitizer version columns in DB
+  end
+
   private
 
   def update_feedback_meta

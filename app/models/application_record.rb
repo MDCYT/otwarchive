@@ -6,7 +6,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   def update_sanitizer_version
     ArchiveConfig.FIELDS_ALLOWING_HTML.each do |field|
-      if self.will_save_change_to_attribute?(field)
+      if respond_to?("#{field}_sanitizer_version=") && self.will_save_change_to_attribute?(field)
         self.send("#{field}_sanitizer_version=", ArchiveConfig.SANITIZER_VERSION)
       end
     end

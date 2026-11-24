@@ -1,147 +1,170 @@
 es:
-  support:
-    home:
-      page_title: "Centro de Ayuda y Soporte"
-      nav:
-        submit_request: "Enviar una solicitud"
-        my_requests: "Mis solicitudes (%{count})"
-        faqs: "Preguntas Frecuentes (FAQ)"
-        back_to_archive: "Volver al Archivo"
-      hero:
-        heading: "¿Cómo podemos ayudarte hoy?"
-        intro: "Encuentra guías y respuestas a las dudas más comunes sobre %{app_name}, o contacta directamente con nuestro equipo de atención al usuario."
-        search_placeholder: "Buscar en el centro de ayuda..."
-        search_button: "Buscar"
-      categories:
-        landmark: "Categorías de ayuda"
-        account:
-          title: "Cuentas e Inicios de sesión"
-          desc: "Invitaciones, problemas de contraseña, cambio de correo registrado, gestión de perfiles y pseuds."
-          link: "Ver guías de cuenta"
-        works:
-          title: "Obras, Capítulos y Series"
-          desc: "Publicación de historias, edición de capítulos, creación de series, colecciones y orfanato de obras."
-          link: "Ver guías de obras"
-        tags:
-          title: "Etiquetas y Filtros"
-          desc: "Búsqueda avanzada, filtros de relaciones, etiquetas canónicas y dudas del sistema de wrangling."
-          link: "Ver guías de etiquetas"
-        policy:
-          title: "Normas y Privacidad"
-          desc: "Términos de servicio (TOS), políticas de contenido, prevención de spam y cómo reportar abusos."
-          link: "Términos de Servicio"
-        faqs:
-          title: "Preguntas Frecuentes"
-          desc: "Respuestas oficiales y detalladas a las consultas más comunes planteadas por la comunidad."
-          link: "Explorar todas las FAQs"
-        custom:
-          title: "Atención Personalizada"
-          desc: "¿No encuentras lo que necesitas? Envía una solicitud directa y nuestro equipo te responderá."
-          link: "Enviar una Solicitud"
-    faq:
-      page_title: "Preguntas Frecuentes - Soporte"
-  support_tickets:
-    index:
-      page_title: "Mis Solicitudes de Soporte"
-      caption: "Solicitudes de Soporte"
-      no_tickets: "Aún no has enviado ninguna solicitud de soporte."
-      id: "ID"
-      subject: "Asunto"
-      category: "Categoría"
-      status: "Estado"
-      last_updated: "Última Actualización"
-      action: "Acción"
-      view: "Ver Hilo"
-      submit_new: "Enviar una nueva solicitud"
-      back_home: "Centro de Ayuda"
-    new:
-      page_title: "Soporte y Comentarios"
-    show:
-      ticket_title: "Ticket #%{id}: %{summary}"
-      details_legend: "Detalles del Ticket"
-      requester: "Solicitante"
-      email: "Correo"
-      category: "Categoría"
-      status: "Estado"
-      created: "Fecha de envío"
-      initial_request: "Solicitud inicial"
-      conversation: "Historial de la conversación"
-      staff_badge: "Equipo de Soporte de AO3"
-      user_badge: "Tú"
-      reply_legend: "Añadir una respuesta a esta solicitud"
-      reply_placeholder: "Escribe tu mensaje o aclaración adicional aquí..."
-      submit_reply: "Enviar respuesta"
-      mark_resolved: "Marcar solicitud como resuelta"
-      resolved_confirm: "¿Confirmas que tu consulta ha quedado resuelta?"
-      resolved_note: "Esta solicitud se encuentra actualmente resuelta. Si envías una respuesta, se reabrirá automáticamente para que el equipo la revise."
-      back_to_list: "Mis solicitudes"
-      help_center: "Centro de Ayuda"
-    statuses:
-      open: "Abierto"
-      pending: "En espera"
-      answered: "Respondido"
-      closed: "Resuelto"
-    flash:
-      created: "Tu solicitud de soporte ha sido enviada con éxito (Ticket #%{id}). Nuestro equipo te responderá a la brevedad."
-      create_error: "Hubo un problema al enviar tu solicitud. Por favor revisa los campos indicados."
-      reply_empty: "El mensaje de respuesta no puede estar vacío."
-      reply_success: "Tu respuesta ha sido añadida al ticket."
-      reply_error: "No se pudo guardar la respuesta."
-      closed: "La solicitud #%{id} ha sido marcada como resuelta."
-      not_found: "No se encontró la solicitud de soporte solicitada."
-      access_denied: "Debes iniciar sesión con tu cuenta de AO3 o verificar tu correo para acceder a este ticket."
   admin:
+    header:
+      support_tickets: Tickets de soporte
     support_tickets:
-      index:
-        page_title: "Panel de Soporte - Solicitudes"
-        caption: "Tickets de soporte (%{filter})"
-        filter_all: "Todos (%{count})"
-        filter_open: "Abiertos (%{count})"
-        filter_pending: "En espera (%{count})"
-        filter_answered: "Respondidos (%{count})"
-        filter_closed: "Resueltos (%{count})"
-        id: "ID"
-        requester: "Solicitante"
-        subject: "Asunto"
-        category: "Categoría"
-        status: "Estado"
-        assigned_to: "Asignado a"
-        unassigned: "Sin asignar"
-        date: "Fecha"
-        action: "Ver/Atender"
-        no_tickets: "No hay tickets de soporte en esta vista."
-      show:
-        page_title: "Soporte: Ticket #%{id} - %{summary}"
-        back_to_panel: "&laquo; Volver al listado de tickets"
-        initial_request: "Solicitud inicial"
-        requester_info: "Detalles del Solicitante"
-        user_account: "Cuenta de AO3"
-        guest: "Invitado"
-        email: "Correo electrónico:"
-        category: "Categoría:"
-        language: "Idioma:"
-        created_at: "Fecha creación:"
-        ip: "IP del usuario:"
-        user_agent: "User-Agent:"
-        admin_management: "Estado y Asignación"
-        status_label: "Estado actual:"
-        assigned_label: "Asignado a:"
-        save_status: "Guardar"
-        assign_button: "Asignar"
-        conversation: "Historial de mensajes"
-        internal_note_badge: "NOTA INTERNA (Solo Equipo)"
-        staff_response_badge: "Respuesta de Soporte"
-        reply_heading: "Responder al Ticket"
-        reply_type_public: "Respuesta pública al usuario (se notificará por correo electrónico)"
-        reply_type_internal: "Nota interna (solo visible para administradores)"
-        next_status: "Cambiar estado a:"
-        send_reply: "Enviar respuesta"
-        unassigned: "Sin asignar"
+      filter:
+        abuse: Políticas y abuso
+        all_types: Todos los tipos
+        technical: Soporte técnico
       flash:
-        reply_success: "Respuesta enviada al usuario con éxito y notificada por correo."
-        note_success: "Nota interna guardada con éxito (no se envió correo al usuario)."
-        status_updated: "Estado del ticket actualizado a '%{status}'."
-        invalid_status: "Estado no válido."
-        assigned: "Ticket asignado a %{admin}."
-        unassigned: "Ticket desasignado."
-        permission_denied: "No tienes permiso para acceder al panel de soporte."
+        assigned: Ticket asignado a %{admin}.
+        invalid_status: Estado no válido.
+        note_success: Nota interna guardada con éxito (no se envió correo al usuario).
+        permission_denied: No tienes permiso para acceder al panel de soporte.
+        reply_success: Respuesta enviada al usuario con éxito y notificada por correo.
+        status_updated: Estado del ticket actualizado a '%{status}'.
+        unassigned: Ticket desasignado.
+      index:
+        action: Ver/Atender
+        assigned_to: Asignado a
+        caption: Tickets de soporte (%{filter})
+        category: Categoría
+        date: Fecha
+        filter_all: Todos (%{count})
+        filter_answered: Respondidos (%{count})
+        filter_closed: Resueltos (%{count})
+        filter_open: Abiertos (%{count})
+        filter_pending: En espera (%{count})
+        id: ID
+        no_tickets: No hay tickets de soporte en esta vista.
+        page_title: Panel de Soporte - Solicitudes
+        requester: Solicitante
+        status: Estado
+        subject: Asunto
+        unassigned: Sin asignar
+      show:
+        admin_management: Estado y Asignación
+        assign_button: Asignar
+        assigned_label: 'Asignado a:'
+        back_to_panel: '&laquo; Volver al listado de tickets'
+        category: 'Categoría:'
+        conversation: Historial de mensajes
+        created_at: 'Fecha creación:'
+        email: 'Correo electrónico:'
+        guest: Invitado
+        initial_request: Solicitud inicial
+        internal_note_badge: NOTA INTERNA (Solo Equipo)
+        ip: 'IP del usuario:'
+        language: 'Idioma:'
+        next_status: 'Cambiar estado a:'
+        page_title: 'Soporte: Ticket #%{id} - %{summary}'
+        reply_heading: Responder al Ticket
+        reply_type_internal: Nota interna (solo visible para administradores)
+        reply_type_public: Respuesta pública al usuario (se notificará por correo
+          electrónico)
+        requester_info: Detalles del Solicitante
+        save_status: Guardar
+        send_reply: Enviar respuesta
+        staff_response_badge: Respuesta de Soporte
+        status_label: 'Estado actual:'
+        unassigned: Sin asignar
+        user_account: Cuenta de AO3
+        user_agent: 'User-Agent:'
+  support:
+    faq:
+      page_title: Preguntas Frecuentes - Soporte
+    home:
+      categories:
+        account:
+          desc: Invitaciones, problemas de contraseña, cambio de correo registrado,
+            gestión de perfiles y pseuds.
+          link: Ver guías de cuenta
+          title: Cuentas e Inicios de sesión
+        custom:
+          desc: ¿No encuentras lo que necesitas? Envía una solicitud directa y nuestro
+            equipo te responderá.
+          link: Enviar una Solicitud
+          title: Atención Personalizada
+        faqs:
+          desc: Respuestas oficiales y detalladas a las consultas más comunes planteadas
+            por la comunidad.
+          link: Explorar todas las FAQs
+          title: Preguntas Frecuentes
+        landmark: Categorías de ayuda
+        policy:
+          desc: Términos de servicio (TOS), políticas de contenido, prevención de
+            spam y cómo reportar abusos.
+          link: Términos de Servicio
+          title: Normas y Privacidad
+        tags:
+          desc: Búsqueda avanzada, filtros de relaciones, etiquetas canónicas y dudas
+            del sistema de wrangling.
+          link: Ver guías de etiquetas
+          title: Etiquetas y Filtros
+        works:
+          desc: Publicación de historias, edición de capítulos, creación de series,
+            colecciones y orfanato de obras.
+          link: Ver guías de obras
+          title: Obras, Capítulos y Series
+      hero:
+        heading: ¿Cómo podemos ayudarte hoy?
+        intro: Encuentra guías y respuestas a las dudas más comunes sobre %{app_name},
+          o contacta directamente con nuestro equipo de atención al usuario.
+        search_button: Buscar
+        search_placeholder: Buscar en el centro de ayuda...
+      nav:
+        back_to_archive: Volver al Archivo
+        faqs: Preguntas Frecuentes (FAQ)
+        my_requests: Mis solicitudes (%{count})
+        submit_request: Enviar una solicitud
+      page_title: Centro de Ayuda y Soporte
+  support_tickets:
+    field:
+      reported_url: Dirección web (URL) de la obra o página
+    flash:
+      access_denied: Debes iniciar sesión con tu cuenta de AO3 o verificar tu correo
+        para acceder a este ticket.
+      closed: 'La solicitud #%{id} ha sido marcada como resuelta.'
+      create_error: Hubo un problema al enviar tu solicitud. Por favor revisa los
+        campos indicados.
+      created: 'Tu solicitud de soporte ha sido enviada con éxito (Ticket #%{id}).
+        Nuestro equipo te responderá a la brevedad.'
+      not_found: No se encontró la solicitud de soporte solicitada.
+      reply_empty: El mensaje de respuesta no puede estar vacío.
+      reply_error: No se pudo guardar la respuesta.
+      reply_success: Tu respuesta ha sido añadida al ticket.
+    index:
+      action: Acción
+      back_home: Centro de Ayuda
+      caption: Solicitudes de Soporte
+      category: Categoría
+      id: ID
+      last_updated: Última Actualización
+      no_tickets: Aún no has enviado ninguna solicitud de soporte.
+      page_title: Mis Solicitudes de Soporte
+      status: Estado
+      subject: Asunto
+      submit_new: Enviar una nueva solicitud
+      view: Ver Hilo
+    new:
+      page_title: Soporte y Comentarios
+    show:
+      back_to_list: Mis solicitudes
+      category: Categoría
+      conversation: Historial de la conversación
+      created: Fecha de envío
+      details_legend: Detalles del Ticket
+      email: Correo
+      help_center: Centro de Ayuda
+      initial_request: Solicitud inicial
+      mark_resolved: Marcar solicitud como resuelta
+      reply_legend: Añadir una respuesta a esta solicitud
+      reply_placeholder: Escribe tu mensaje o aclaración adicional aquí...
+      requester: Solicitante
+      resolved_confirm: ¿Confirmas que tu consulta ha quedado resuelta?
+      resolved_note: Esta solicitud se encuentra actualmente resuelta. Si envías una
+        respuesta, se reabrirá automáticamente para que el equipo la revise.
+      staff_badge: Equipo de Soporte de AO3
+      status: Estado
+      submit_reply: Enviar respuesta
+      ticket_title: 'Ticket #%{id}: %{summary}'
+      user_badge: Tú
+    statuses:
+      answered: Respondido
+      closed: Resuelto
+      open: Abierto
+      pending: En espera
+    type:
+      abuse: Preguntas sobre políticas y reportes de abuso
+      technical: Soporte técnico y sugerencias

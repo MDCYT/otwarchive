@@ -1,15 +1,39 @@
-<div class="support-ticket-new wrapper" style="max-width:980px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
+<div class="support-new-ticket wrapper" style="max-width:1050px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
+  <p class="navigation actions" style="margin-bottom:1.2em;">
+    <%= link_to t("support_tickets.show.help_center", default: "Help Center"), support_root_path rescue link_to("Help Center", "/") %> &gt;
+    <%= link_to t("support_tickets.show.back_to_list", default: "Support Requests"), tickets_path %> &gt;
+    <%= @ticket_type == 'abuse' ? t("support_tickets.type.abuse", default: "Policy Questions & Abuse Reports") : t("support_tickets.type.technical", default: "Technical Support & Feedback") %>
+  </p>
+
   <%= error_messages_for :feedback %>
 
-  <h2 class="heading"><%= t("feedbacks.new.heading.page_title") %></h2>
+  <h2 class="heading">
+    <%= @ticket_type == 'abuse' ? t("abuse_reports.new.heading.page_title", default: "Policy Questions & Abuse Reports") : t("feedbacks.new.heading.page_title", default: "Technical Support & Feedback") %>
+  </h2>
 
-  <h4 class="landmark heading"><%= t("feedbacks.new.heading.landmark.reference") %></h4>
-  <ul class="navigation actions" role="navigation" style="margin-bottom:1.5em;">
-    <li><%= link_to t("feedbacks.new.navigation.faqs"), archive_faqs_path %></li>
-    <li><%= link_to t("feedbacks.new.navigation.release_notes"), admin_posts_path(:tag => 1) %></li>
-    <li><%= link_to t("feedbacks.new.navigation.known_issues"), known_issues_path %></li>
-    <li><%= link_to t("support.home.nav.my_requests", count: @open_tickets_count), tickets_path %></li>
-    <li><%= link_to t("support.home.nav.back_to_archive"), "https://libreria.org.pe" %></li>
+  <!-- Subnav tabs: Choose between Technical Support and Abuse Reports -->
+  <ul class="navigation actions" role="tablist" style="margin-bottom:1.5em; display:flex; flex-wrap:wrap; gap:6px;">
+    <li>
+      <% if @ticket_type == 'technical' %>
+        <span class="current" style="font-weight:bold; background:#e8f4fd; color:#0d47a1; border:1px solid #b6d4fe; padding:4px 12px; border-radius:3px;">
+          🛠️ <%= t("support_tickets.type.technical", default: "Technical Support & Feedback") %>
+        </span>
+      <% else %>
+        <%= link_to "🛠️ #{t('support_tickets.type.technical', default: 'Technical Support & Feedback')}", new_ticket_path(type: 'technical') %>
+      <% end %>
+    </li>
+    <li>
+      <% if @ticket_type == 'abuse' %>
+        <span class="current" style="font-weight:bold; background:#fbe9e7; color:#b71c1c; border:1px solid #ffccbc; padding:4px 12px; border-radius:3px;">
+          🛡️ <%= t("support_tickets.type.abuse", default: "Policy Questions & Abuse Reports") %>
+        </span>
+      <% else %>
+        <%= link_to "🛡️ #{t('support_tickets.type.abuse', default: 'Policy Questions & Abuse Reports')}", new_ticket_path(type: 'abuse') %>
+      <% end %>
+    </li>
+    <li style="margin-left:auto;">
+      <%= link_to t("support.home.nav.my_requests", count: @open_tickets_count, default: "My Requests (%{count})"), tickets_path %>
+    </li>
   </ul>
 
   <% if @admin_setting&.disable_support_form %>
@@ -17,29 +41,78 @@
       <%= raw sanitize_field(@admin_setting, :disabled_support_form_text) %>
     </div>
   <% else %>
-    <h3 class="heading"><%= t("feedbacks.new.heading.instructions") %></h3>
-    <div class="userstuff" style="margin-bottom:1.5em; line-height:1.5;">
-      <p><%= t("feedbacks.new.status.current_html",
-               status_page_link: link_to(t("feedbacks.new.status.status_page"), "https://www.otwstatus.org"),
-               bluesky_link: link_to(t("feedbacks.new.status.bluesky"), "https://bsky.app/profile/status.archiveofourown.org"),
-               tumblr_link: link_to(t("feedbacks.new.status.tumblr"), "https://ao3org.tumblr.com")) %></p>
-      <p><%= t("feedbacks.new.abuse.reports_html", contact_link: link_to(t("feedbacks.new.abuse.contact"), new_abuse_report_path)) %></p>
-      <p><%= t("feedbacks.new.reportable.intro") %></p>
-      <ul>
-        <li><%= t("feedbacks.new.reportable.fnok.concerning_html", fnok_link: link_to(t("feedbacks.new.reportable.fnok.fnok"), archive_faq_path("fannish-next-of-kin"))) rescue nil %></li>
-        <li><%= t("feedbacks.new.reportable.bugs") %></li>
-        <li><%= t("feedbacks.new.reportable.site_questions") %></li>
-        <li><%= t("feedbacks.new.reportable.account_creation") %></li>
-        <li><%= t("feedbacks.new.reportable.lost_access") %></li>
-        <li><%= t("feedbacks.new.reportable.tag_changes") %></li>
-        <li><%= t("feedbacks.new.reportable.new_features") %></li>
-        <li><%= t("feedbacks.new.reportable.orphaned_works") %></li>
-        <li><%= t("feedbacks.new.reportable.work_problems") %></li>
-        <li><%= t("feedbacks.new.reportable.policy_questions") %></li>
-      </ul>
-      <p><%= t("feedbacks.new.do_not_spam_html") %></p>
-      <% if @support_languages.present? %>
-        <p><%= t("feedbacks.new.languages_html", list_html: to_sentence(@support_languages.map { |language| tag.span(language.name, lang: language.short) })) %></p>
+    <!-- Guidance Section -->
+    <div class="userstuff" style="margin-bottom:1.5em; line-height:1.5; background:#fafafa; border:1px solid #e0e0e0; border-radius:4px; padding:1.2em 1.5em;">
+      <% if @ticket_type == 'abuse' %>
+        <p><big><strong>
+          <%= t("abuse_reports.new.purview.about_html",
+                tos_link: link_to(t("abuse_reports.new.purview.tos", default: "Terms of Service"), tos_path),
+                tos_faq_link: link_to(t("abuse_reports.new.purview.tos_faq", default: "Terms of Service FAQ"), tos_faq_path(anchor: "how_to_report"))) rescue "Policy & Abuse handles violations of our Terms of Service." %>
+        </strong></big></p>
+
+        <p>
+          <%= t("abuse_reports.new.purview.contact_support_html",
+                fnok_link: link_to(t("abuse_reports.new.purview.fnok", default: "Fannish Next of Kin FAQ"), archive_faq_path("fannish-next-of-kin")),
+                support_link: link_to(t("abuse_reports.new.purview.support", default: "Support"), new_ticket_path(type: 'technical'))) rescue "For technical bugs or site questions, please switch to the Technical Support tab." %>
+        </p>
+
+        <p>
+          <strong><%= t("abuse_reports.new.reportable.intro_html", pac_link: "Policy & Abuse") rescue "What you can report here:" %></strong>
+        </p>
+
+        <ul>
+          <li><%= t("abuse_reports.new.reportable.violation_html", content_policy_link: link_to(t("abuse_reports.new.reportable.content_policy", default: "Content Policy"), content_path), tos_link: link_to(t("abuse_reports.new.reportable.tos", default: "Terms of Service"), tos_path)) rescue "Content that violates the Terms of Service" %></li>
+          <li><%= t("abuse_reports.new.reportable.allowed", default: "Content you dislike, find offensive, or consider low quality is NOT reportable if it does not violate policy.") %></li>
+          <li><%= t("abuse_reports.new.reportable.harassment", default: "Harassment, hate speech, threats, or unwanted contact.") %></li>
+          <li><%= t("abuse_reports.new.reportable.hack", default: "Hacked or unauthorized access to an account.") %></li>
+        </ul>
+
+        <p>
+          <strong><%= t("abuse_reports.new.include.intro", default: "What to include in your report:") %></strong>
+        </p>
+
+        <ul>
+          <li><%= t("abuse_reports.new.include.username_html", reported_username_link: "Username of the reported user (if known)") rescue "The username or profile of the user being reported." %></li>
+          <li><%= t("abuse_reports.new.include.other_content", default: "The exact web address (URL) of the work, chapter, series, collection, or comment.") %></li>
+          <li><%= t("abuse_reports.new.include.quote", default: "Specific quotes of the offending text or precise description of the issue.") %></li>
+          <li><%= t("abuse_reports.new.include.evidence_html", sources_link: "Sources/evidence") rescue "Links or sources showing original authorship in cases of plagiarism." %></li>
+        </ul>
+
+        <p>
+          <%= t("abuse_reports.new.do_not_spam.paragraph_html", split_bold: tag.strong(t("abuse_reports.new.do_not_spam.split", default: "Please do not submit multiple reports for the same issue.")), delay_link: "Resolution FAQ") rescue "Please do not submit multiple reports for the same issue." %>
+        </p>
+
+        <% if @abuse_languages.present? %>
+          <p><%= t("abuse_reports.new.languages.intro_html", list_html: to_sentence(@abuse_languages.map { |l| tag.span(l.name, lang: l.short) })) rescue nil %></p>
+        <% end %>
+
+      <% else %>
+        <p><%= t("feedbacks.new.status.current_html",
+                 status_page_link: link_to(t("feedbacks.new.status.status_page", default: "Archive Status"), "https://www.otwstatus.org"),
+                 bluesky_link: link_to(t("feedbacks.new.status.bluesky", default: "Bluesky"), "https://bsky.app/profile/status.archiveofourown.org"),
+                 tumblr_link: link_to(t("feedbacks.new.status.tumblr", default: "Tumblr"), "https://ao3org.tumblr.com")) rescue nil %></p>
+
+        <p>
+          <strong><%= t("feedbacks.new.reportable.intro", default: "What you can report here:") %></strong>
+        </p>
+        <ul>
+          <li><%= t("feedbacks.new.reportable.bugs", default: "Errors, glitches, and site display bugs.") %></li>
+          <li><%= t("feedbacks.new.reportable.account_creation", default: "Invitation code and account registration help.") %></li>
+          <li><%= t("feedbacks.new.reportable.lost_access", default: "Password resets and lost account access.") %></li>
+          <li><%= t("feedbacks.new.reportable.tag_changes", default: "Questions about tag wrangling and search filters.") %></li>
+          <li><%= t("feedbacks.new.reportable.work_problems", default: "Issues uploading, updating, or formatting works.") %></li>
+          <li><%= t("feedbacks.new.reportable.new_features", default: "Feature suggestions and feedback.") %></li>
+        </ul>
+
+        <p>
+          <strong>Notice:</strong> For harassment, plagiarism, or Terms of Service violations, please choose the <%= link_to "Policy Questions & Abuse Reports", new_ticket_path(type: 'abuse') %> tab above.
+        </p>
+
+        <p><%= t("feedbacks.new.do_not_spam_html", default: "Please do not submit multiple tickets for the same issue.") rescue nil %></p>
+
+        <% if @support_languages.present? %>
+          <p><%= t("feedbacks.new.languages_html", list_html: to_sentence(@support_languages.map { |l| tag.span(l.name, lang: l.short) })) rescue nil %></p>
+        <% end %>
       <% end %>
     </div>
 
@@ -47,59 +120,116 @@
       <%= render "admin/support_notices/support_notice", support_notice: @support_notice %>
     <% end %>
 
+    <!-- Form Section -->
     <%= form_for(@feedback, url: tickets_path, html: {class: "post feedback"}) do |f| %>
+      <%= f.hidden_field :ticket_type, value: @ticket_type %>
+      <%= f.hidden_field :referer %>
+
+      <!-- Contact Info -->
       <fieldset>
-        <legend><%= t("feedbacks.new.form.legend.contact_info") %></legend>
+        <legend><%= t("feedbacks.new.form.legend.contact_info", default: "Contact Information") %></legend>
         <dl>
-          <dt><%= f.label :username, t("feedbacks.new.form.name.label") %></dt>
+          <dt><%= f.label :username, t("feedbacks.new.form.name.label", default: "Your Name or Username") %></dt>
           <dd>
             <%= f.text_field :username %>
           </dd>
-          <dt class="required"><%= f.label :email, t("feedbacks.new.form.email.label") %></dt>
+          <dt class="required"><%= f.label :email, t("feedbacks.new.form.email.label", default: "Your Email") %></dt>
           <dd class="required">
-            <%= f.text_field :email, size: 60 %>
+            <%= f.text_field :email, size: 60, required: true, "aria-describedby" => "email-field-description" %>
+            <p class="footnote" id="email-field-description">
+              <%= @ticket_type == 'abuse' ? t("abuse_reports.new.form.email.description", default: "We will only use this to contact you about this report.") : t("feedbacks.new.form.email.description", default: "We will use this email address to notify you when staff replies to your ticket.") %>
+            </p>
           </dd>
         </dl>
       </fieldset>
 
+      <!-- Details -->
       <fieldset>
-        <legend><%= t("feedbacks.new.form.legend.feedback") %></legend>
-        <%= f.hidden_field :referer %>
+        <legend>
+          <%= @ticket_type == 'abuse' ? t("abuse_reports.new.form.legend.abuse", default: "Report Details") : t("feedbacks.new.form.legend.feedback", default: "Ticket Details") %>
+        </legend>
         <dl>
           <dt class="required">
-            <%= f.label :language, t("feedbacks.new.form.language.label") %>
+            <%= f.label :language, t("feedbacks.new.form.language.label", default: "What language can we respond in?") %>
           </dt>
           <dd class="required">
-            <%= f.select(:language, language_options_for_select(@support_languages, "name"),
+            <% available_langs = (@ticket_type == 'abuse' ? @abuse_languages : @support_languages) || Language.all %>
+            <%= f.select(:language, language_options_for_select(available_langs, "name"),
                   { selected: @feedback.language || Language.default&.name || "English" }) %>
           </dd>
+
+          <% if @ticket_type == 'abuse' %>
+            <dt class="required">
+              <%= f.label :category, t("support_tickets.category.label", default: "Reason / Policy Category") %>
+            </dt>
+            <dd class="required">
+              <%= f.select :category, [
+                ["Content Policy Violation (Non-fanwork / Spam / Commercial)", "Content Policy Violation"],
+                ["Harassment / Threatening Behavior", "Harassment"],
+                ["Plagiarism / Intellectual Property Infringement", "Plagiarism"],
+                ["Inappropriate Tags / Archive Warning Evasion", "Tagging Violation"],
+                ["Unauthorized / Compromised Account", "Compromised Account"],
+                ["Other Terms of Service Issue", "Other Policy Issue"]
+              ], { selected: @feedback.category.presence || "Content Policy Violation" } %>
+            </dd>
+
+            <dt class="required">
+              <%= f.label :reported_url, t("abuse_reports.new.form.link.label", default: "Web Address (URL) of the Work or Page") %>
+            </dt>
+            <dd class="required">
+              <%= f.text_field :reported_url, size: 60, required: true, placeholder: "https://libreria.org.pe/works/...", "aria-describedby" => "url-field-description" %>
+              <p class="footnote" id="url-field-description">
+                <%= t("abuse_reports.new.form.link.description", default: "Please provide the full URL of the work, chapter, series, comment, or user profile you are reporting.") %>
+              </p>
+            </dd>
+          <% else %>
+            <dt class="required">
+              <%= f.label :category, t("support_tickets.category.label", default: "Category") %>
+            </dt>
+            <dd class="required">
+              <%= f.select :category, [
+                ["General Inquiry", "General Inquiry"],
+                ["Bugs & Site Glitches", "Bugs & Site Glitches"],
+                ["Account & Login Issues", "Account & Login Issues"],
+                ["Tags, Filters & Wrangling", "Tags & Filters"],
+                ["Works, Chapters & Series Formatting", "Works & Chapters"],
+                ["Feature Suggestions", "Feature Suggestions"],
+                ["Other", "Other"]
+              ], { selected: @feedback.category.presence || "General Inquiry" } %>
+            </dd>
+          <% end %>
+
           <dt class="required">
-            <%= f.label :summary, t("feedbacks.new.form.summary.label") %>
+            <%= f.label :summary, t("feedbacks.new.form.summary.label", default: "Brief Summary") %>
           </dt>
           <dd class="required">
-            <%= f.text_field :summary, size: 60, class: "observe_textlength" %>
-            <%= generate_countdown_html("feedback_summary", ArchiveConfig.FEEDBACK_SUMMARY_MAX_DISPLAYED) rescue nil %>
-            <%= live_validation_for_field("feedback_summary",
-                  failureMessage: t("feedbacks.new.form.summary.error")) rescue nil %>
-          </dd>
-          <dt class="required">
-            <%= f.label :comment, t("feedbacks.new.form.comment.label") %>
-          </dt>
-          <dd class="required">
-            <p id="comment-field-description">
-              <%= t("feedbacks.new.form.comment.description") %>
+            <%= f.text_field :summary, size: 60, class: "observe_textlength", required: true, "aria-describedby" => "summary-field-description" %>
+            <p class="footnote" id="summary-field-description">
+              <%= @ticket_type == 'abuse' ? t("abuse_reports.new.form.summary.description", default: "A brief phrase describing the violation.") : t("feedbacks.new.form.summary.description", default: "A short, descriptive title for your request.") %>
             </p>
-            <%= f.text_area :comment, cols: 60, "aria-describedby" => "comment-field-description" %>
-            <%= live_validation_for_field("feedback_comment",
-                  failureMessage: t("feedbacks.new.form.comment.error")) rescue nil %>
+          </dd>
+
+          <dt class="required">
+            <%= f.label :comment, (@ticket_type == 'abuse' ? t("abuse_reports.new.form.comment.label", default: "Description of the Violation") : t("feedbacks.new.form.comment.label", default: "Description / What can we help you with?")) %>
+          </dt>
+          <dd class="required">
+            <p class="footnote" id="comment-field-description">
+              <% if @ticket_type == 'abuse' %>
+                Please explain why this content violates the Terms of Service. Include quotes, timestamps, or links to original sources if reporting plagiarism.
+              <% else %>
+                <%= t("feedbacks.new.form.comment.description", default: "Please provide as much detail as possible, including URLs, error messages, and steps to reproduce.") %>
+              <% end %>
+            </p>
+            <%= f.text_area :comment, cols: 60, rows: 10, required: true, "aria-describedby" => "comment-field-description" %>
           </dd>
         </dl>
       </fieldset>
 
       <fieldset>
-        <legend><%= t("feedbacks.new.form.legend.send") %></legend>
+        <legend><%= t("feedbacks.new.form.legend.send", default: "Submit") %></legend>
         <p class="submit actions">
-          <%= f.submit t("feedbacks.new.form.submit.active"), data: { disable_with: t("feedbacks.new.form.submit.disabled") } %>
+          <%= f.submit (@ticket_type == 'abuse' ? t("abuse_reports.new.form.submit.active", default: "Submit Abuse Report") : t("feedbacks.new.form.submit.active", default: "Submit Ticket")),
+                data: { disable_with: t("feedbacks.new.form.submit.disabled", default: "Submitting...") } %>
         </p>
       </fieldset>
     <% end %>

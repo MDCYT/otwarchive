@@ -1,28 +1,36 @@
 <div class="admin wrapper" style="max-width:1150px; margin:0 auto; padding:0.5em 1em 2em; box-sizing:border-box;">
-  <h2 class="heading"><%= t("admin.support_tickets.index.page_title") %></h2>
+  <h2 class="heading"><%= t("admin.support_tickets.index.page_title", default: "Support Tickets Dashboard") %></h2>
 
-  <ul class="navigation actions" role="navigation" style="margin-bottom:1.5em;">
-    <li><%= span_if_current t("admin.support_tickets.index.filter_all", count: @counts[:all]), admin_support_tickets_path %></li>
-    <li><%= span_if_current t("admin.support_tickets.index.filter_open", count: @counts[:open]), admin_support_tickets_path(status: 'open') %></li>
-    <li><%= span_if_current t("admin.support_tickets.index.filter_pending", count: @counts[:pending]), admin_support_tickets_path(status: 'pending') %></li>
-    <li><%= span_if_current t("admin.support_tickets.index.filter_answered", count: @counts[:answered]), admin_support_tickets_path(status: 'answered') %></li>
-    <li><%= span_if_current t("admin.support_tickets.index.filter_closed", count: @counts[:closed]), admin_support_tickets_path(status: 'closed') %></li>
+  <!-- Status filter tabs -->
+  <ul class="navigation actions" role="navigation" style="margin-bottom:0.8em;">
+    <li><%= span_if_current t("admin.support_tickets.index.filter_all", count: @counts[:all], default: "All (%{count})"), admin_support_tickets_path(type: params[:type]) %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_open", count: @counts[:open], default: "Open (%{count})"), admin_support_tickets_path(status: 'open', type: params[:type]) %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_pending", count: @counts[:pending], default: "Pending (%{count})"), admin_support_tickets_path(status: 'pending', type: params[:type]) %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_answered", count: @counts[:answered], default: "Answered (%{count})"), admin_support_tickets_path(status: 'answered', type: params[:type]) %></li>
+    <li><%= span_if_current t("admin.support_tickets.index.filter_closed", count: @counts[:closed], default: "Resolved (%{count})"), admin_support_tickets_path(status: 'closed', type: params[:type]) %></li>
+  </ul>
+
+  <!-- Type filter subnav -->
+  <ul class="actions" role="navigation" style="margin-bottom:1.5em; font-size:0.9em; display:flex; gap:6px; flex-wrap:wrap;">
+    <li><%= span_if_current t("admin.support_tickets.filter.all_types", default: "All Types"), admin_support_tickets_path(status: params[:status]) %></li>
+    <li><%= span_if_current "#{t('admin.support_tickets.filter.technical', default: 'Technical Support')} (#{@counts[:technical]})", admin_support_tickets_path(status: params[:status], type: 'technical') %></li>
+    <li><%= span_if_current "#{t('admin.support_tickets.filter.abuse', default: 'Policy & Abuse')} (#{@counts[:abuse]})", admin_support_tickets_path(status: params[:status], type: 'abuse') %></li>
   </ul>
 
   <% if @tickets.any? %>
     <div class="wrapper">
       <table summary="List of user support tickets for administration and support staff">
-        <caption><%= t("admin.support_tickets.index.caption", filter: @status_filter.capitalize) %></caption>
+        <caption><%= t("admin.support_tickets.index.caption", filter: @status_filter.capitalize, default: "Support Tickets (%{filter})") %></caption>
         <thead>
           <tr>
-            <th scope="col" style="width:60px;"><%= t("admin.support_tickets.index.id") %></th>
-            <th scope="col" style="width:180px;"><%= t("admin.support_tickets.index.requester") %></th>
-            <th scope="col"><%= t("admin.support_tickets.index.subject") %></th>
-            <th scope="col" style="width:140px;"><%= t("admin.support_tickets.index.category") %></th>
-            <th scope="col" style="width:110px;"><%= t("admin.support_tickets.index.status") %></th>
-            <th scope="col" style="width:130px;"><%= t("admin.support_tickets.index.assigned_to") %></th>
-            <th scope="col" style="width:120px;"><%= t("admin.support_tickets.index.date") %></th>
-            <th scope="col" style="width:90px;"><%= t("admin.support_tickets.index.action") %></th>
+            <th scope="col" style="width:60px;"><%= t("admin.support_tickets.index.id", default: "ID") %></th>
+            <th scope="col" style="width:180px;"><%= t("admin.support_tickets.index.requester", default: "Requester") %></th>
+            <th scope="col"><%= t("admin.support_tickets.index.subject", default: "Subject") %></th>
+            <th scope="col" style="width:140px;"><%= t("admin.support_tickets.index.category", default: "Category") %></th>
+            <th scope="col" style="width:110px;"><%= t("admin.support_tickets.index.status", default: "Status") %></th>
+            <th scope="col" style="width:130px;"><%= t("admin.support_tickets.index.assigned_to", default: "Assigned To") %></th>
+            <th scope="col" style="width:120px;"><%= t("admin.support_tickets.index.date", default: "Date") %></th>
+            <th scope="col" style="width:90px;"><%= t("admin.support_tickets.index.action", default: "Action") %></th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +44,17 @@
                 <small style="color:#666;"><%= ticket.email %></small>
               </td>
               <td>
+                <% if ticket.abuse? %>
+                  <span style="background:#900; color:#fff; font-size:0.75em; padding:1px 5px; border-radius:3px; font-weight:bold; margin-right:4px;">ABUSE</span>
+                <% else %>
+                  <span style="background:#0277bd; color:#fff; font-size:0.75em; padding:1px 5px; border-radius:3px; font-weight:bold; margin-right:4px;">SUPPORT</span>
+                <% end %>
                 <%= link_to strip_tags(ticket.summary), admin_support_ticket_path(ticket), style: "font-weight:bold;" %>
+                <% if ticket.reported_url.present? %>
+                  <div style="font-size:0.8em; color:#666; margin-top:2px; word-break:break-all;">
+                    🔗 <%= truncate(ticket.reported_url, length: 50) %>
+                  </div>
+                <% end %>
               </td>
               <td><%= ticket.category.presence || "General" %></td>
               <td>
@@ -46,24 +64,29 @@
                    when 'answered' then '#0d47a1'
                    when 'closed' then '#616161'
                    else '#2e7d32' end %>
-                <span style="display:inline-block; padding:2px 7px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
+                <span style="padding:2px 7px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
                   <%= ticket.status_label %>
                 </span>
               </td>
               <td>
-                <%= ticket.assigned_to&.login || content_tag(:span, t("admin.support_tickets.index.unassigned"), style: "color:#888; font-style:italic;") %>
+                <% if ticket.assigned_to %>
+                  <span style="color:#0277bd; font-weight:bold;"><%= ticket.assigned_to.login %></span>
+                <% else %>
+                  <span style="color:#999; font-style:italic;"><%= t("admin.support_tickets.index.unassigned", default: "Unassigned") %></span>
+                <% end %>
               </td>
-              <td><%= l(ticket.created_at, format: :short) rescue ticket.created_at.to_s(:short) %></td>
+              <td style="font-size:0.85em; color:#555;">
+                <%= l(ticket.updated_at, format: :short) rescue ticket.updated_at.to_s(:short) %>
+              </td>
               <td>
-                <%= link_to t("admin.support_tickets.index.action"), admin_support_ticket_path(ticket), class: "actions" %>
+                <%= link_to t("admin.support_tickets.index.action", default: "View"), admin_support_ticket_path(ticket), class: "action" %>
               </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
-    <%= will_paginate @tickets %>
   <% else %>
-    <p class="notice" style="margin-top:1.5em;"><%= t("admin.support_tickets.index.no_tickets") %></p>
+    <p class="notes" style="margin-top:2em;"><%= t("admin.support_tickets.index.no_tickets", default: "No support tickets found in this view.") %></p>
   <% end %>
 </div>

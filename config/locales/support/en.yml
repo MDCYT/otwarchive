@@ -1,147 +1,167 @@
 en:
-  support:
-    home:
-      page_title: "Help & Support Center"
-      nav:
-        submit_request: "Submit a Request"
-        my_requests: "My Requests (%{count})"
-        faqs: "Frequently Asked Questions (FAQ)"
-        back_to_archive: "Back to Archive"
-      hero:
-        heading: "How can we help you today?"
-        intro: "Find guides and answers to common questions about %{app_name}, or reach out directly to our support team."
-        search_placeholder: "Search help center..."
-        search_button: "Search"
-      categories:
-        landmark: "Help Categories"
-        account:
-          title: "Accounts & Sign In"
-          desc: "Invitations, password recovery, changing email, profile management, and pseuds."
-          link: "View account guides"
-        works:
-          title: "Works, Chapters & Series"
-          desc: "Posting works, editing chapters, series, collections, and orphaning works."
-          link: "View work guides"
-        tags:
-          title: "Tags & Filtering"
-          desc: "Advanced search, relationship tags, canonical tags, and tag wrangling."
-          link: "View tag guides"
-        policy:
-          title: "Policy & Privacy"
-          desc: "Terms of Service (TOS), content guidelines, spam prevention, and reporting abuse."
-          link: "Terms of Service"
-        faqs:
-          title: "Frequently Asked Questions"
-          desc: "Official detailed answers to common inquiries from our community."
-          link: "Explore all FAQs"
-        custom:
-          title: "Direct Support"
-          desc: "Can't find what you need? Send a request and our team will get back to you."
-          link: "Submit a Request"
-    faq:
-      page_title: "Frequently Asked Questions - Support"
-  support_tickets:
-    index:
-      page_title: "My Support Requests"
-      caption: "Support Requests"
-      no_tickets: "You have not submitted any support requests yet."
-      id: "ID"
-      subject: "Subject"
-      category: "Category"
-      status: "Status"
-      last_updated: "Last Updated"
-      action: "Action"
-      view: "View Thread"
-      submit_new: "Submit a new request"
-      back_home: "Help Center"
-    new:
-      page_title: "Support and Feedback"
-    show:
-      ticket_title: "Ticket #%{id}: %{summary}"
-      details_legend: "Ticket Details"
-      requester: "Requester"
-      email: "Email"
-      category: "Category"
-      status: "Status"
-      created: "Created"
-      initial_request: "Initial Request"
-      conversation: "Conversation History"
-      staff_badge: "AO3 Support Team"
-      user_badge: "You"
-      reply_legend: "Add a reply to this request"
-      reply_placeholder: "Type your reply or additional details here..."
-      submit_reply: "Submit Reply"
-      mark_resolved: "Mark request as resolved"
-      resolved_confirm: "Are you sure you want to mark this request as resolved?"
-      resolved_note: "This ticket has been marked as resolved. Posting a new reply will reopen it."
-      back_to_list: "My Requests"
-      help_center: "Help Center"
-    statuses:
-      open: "Open"
-      pending: "Pending"
-      answered: "Answered"
-      closed: "Resolved"
-    flash:
-      created: "Your support request has been submitted successfully (Ticket #%{id}). Our team will review it and reply shortly."
-      create_error: "There was a problem submitting your request. Please check the fields below."
-      reply_empty: "Reply message cannot be empty."
-      reply_success: "Your reply has been added to the ticket."
-      reply_error: "Could not save your reply."
-      closed: "Request #%{id} has been marked as resolved."
-      not_found: "Support request not found."
-      access_denied: "Please log in to your AO3 account or verify your email to access this ticket."
   admin:
+    header:
+      support_tickets: Support Tickets
     support_tickets:
-      index:
-        page_title: "Support Tickets Dashboard"
-        caption: "Support Tickets (%{filter})"
-        filter_all: "All (%{count})"
-        filter_open: "Open (%{count})"
-        filter_pending: "Pending (%{count})"
-        filter_answered: "Answered (%{count})"
-        filter_closed: "Resolved (%{count})"
-        id: "ID"
-        requester: "Requester"
-        subject: "Subject"
-        category: "Category"
-        status: "Status"
-        assigned_to: "Assigned To"
-        unassigned: "Unassigned"
-        date: "Date"
-        action: "View / Reply"
-        no_tickets: "No support tickets found in this view."
-      show:
-        page_title: "Support: Ticket #%{id} - %{summary}"
-        back_to_panel: "&laquo; Back to Tickets Dashboard"
-        initial_request: "Initial Request"
-        requester_info: "Requester Info"
-        user_account: "AO3 Account"
-        guest: "Guest"
-        email: "Email:"
-        category: "Category:"
-        language: "Language:"
-        created_at: "Created:"
-        ip: "IP Address:"
-        user_agent: "User Agent:"
-        admin_management: "Status & Assignment"
-        status_label: "Current Status:"
-        assigned_label: "Assigned To:"
-        save_status: "Update"
-        assign_button: "Assign"
-        conversation: "Message History"
-        internal_note_badge: "INTERNAL NOTE (Staff Only)"
-        staff_response_badge: "Support Response"
-        reply_heading: "Reply to Ticket"
-        reply_type_public: "Public response to user (will notify by email)"
-        reply_type_internal: "Internal staff note (only visible to support/admin team)"
-        next_status: "Set status to:"
-        send_reply: "Submit Response"
-        unassigned: "Unassigned"
+      filter:
+        abuse: Policy & Abuse
+        all_types: All Types
+        technical: Technical Support
       flash:
-        reply_success: "Response sent to user successfully and notified by email."
-        note_success: "Internal note saved successfully (no email sent to user)."
-        status_updated: "Ticket status updated to '%{status}'."
-        invalid_status: "Invalid status."
-        assigned: "Ticket assigned to %{admin}."
-        unassigned: "Ticket unassigned."
-        permission_denied: "You do not have permission to access the support panel."
+        assigned: Ticket assigned to %{admin}.
+        invalid_status: Invalid status.
+        note_success: Internal note saved successfully (no email sent to user).
+        permission_denied: You do not have permission to access the support panel.
+        reply_success: Response sent to user successfully and notified by email.
+        status_updated: Ticket status updated to '%{status}'.
+        unassigned: Ticket unassigned.
+      index:
+        action: View / Reply
+        assigned_to: Assigned To
+        caption: Support Tickets (%{filter})
+        category: Category
+        date: Date
+        filter_all: All (%{count})
+        filter_answered: Answered (%{count})
+        filter_closed: Resolved (%{count})
+        filter_open: Open (%{count})
+        filter_pending: Pending (%{count})
+        id: ID
+        no_tickets: No support tickets found in this view.
+        page_title: Support Tickets Dashboard
+        requester: Requester
+        status: Status
+        subject: Subject
+        unassigned: Unassigned
+      show:
+        admin_management: Status & Assignment
+        assign_button: Assign
+        assigned_label: 'Assigned To:'
+        back_to_panel: '&laquo; Back to Tickets Dashboard'
+        category: 'Category:'
+        conversation: Message History
+        created_at: 'Created:'
+        email: 'Email:'
+        guest: Guest
+        initial_request: Initial Request
+        internal_note_badge: INTERNAL NOTE (Staff Only)
+        ip: 'IP Address:'
+        language: 'Language:'
+        next_status: 'Set status to:'
+        page_title: 'Support: Ticket #%{id} - %{summary}'
+        reply_heading: Reply to Ticket
+        reply_type_internal: Internal staff note (only visible to support/admin team)
+        reply_type_public: Public response to user (will notify by email)
+        requester_info: Requester Info
+        save_status: Update
+        send_reply: Submit Response
+        staff_response_badge: Support Response
+        status_label: 'Current Status:'
+        unassigned: Unassigned
+        user_account: AO3 Account
+        user_agent: 'User Agent:'
+  support:
+    faq:
+      page_title: Frequently Asked Questions - Support
+    home:
+      categories:
+        account:
+          desc: Invitations, password recovery, changing email, profile management,
+            and pseuds.
+          link: View account guides
+          title: Accounts & Sign In
+        custom:
+          desc: Can't find what you need? Send a request and our team will get back
+            to you.
+          link: Submit a Request
+          title: Direct Support
+        faqs:
+          desc: Official detailed answers to common inquiries from our community.
+          link: Explore all FAQs
+          title: Frequently Asked Questions
+        landmark: Help Categories
+        policy:
+          desc: Terms of Service (TOS), content guidelines, spam prevention, and reporting
+            abuse.
+          link: Terms of Service
+          title: Policy & Privacy
+        tags:
+          desc: Advanced search, relationship tags, canonical tags, and tag wrangling.
+          link: View tag guides
+          title: Tags & Filtering
+        works:
+          desc: Posting works, editing chapters, series, collections, and orphaning
+            works.
+          link: View work guides
+          title: Works, Chapters & Series
+      hero:
+        heading: How can we help you today?
+        intro: Find guides and answers to common questions about %{app_name}, or reach
+          out directly to our support team.
+        search_button: Search
+        search_placeholder: Search help center...
+      nav:
+        back_to_archive: Back to Archive
+        faqs: Frequently Asked Questions (FAQ)
+        my_requests: My Requests (%{count})
+        submit_request: Submit a Request
+      page_title: Help & Support Center
+  support_tickets:
+    field:
+      reported_url: Web Address (URL) of the Work or Page
+    flash:
+      access_denied: Please log in to your AO3 account or verify your email to access
+        this ticket.
+      closed: 'Request #%{id} has been marked as resolved.'
+      create_error: There was a problem submitting your request. Please check the
+        fields below.
+      created: 'Your support request has been submitted successfully (Ticket #%{id}).
+        Our team will review it and reply shortly.'
+      not_found: Support request not found.
+      reply_empty: Reply message cannot be empty.
+      reply_error: Could not save your reply.
+      reply_success: Your reply has been added to the ticket.
+    index:
+      action: Action
+      back_home: Help Center
+      caption: Support Requests
+      category: Category
+      id: ID
+      last_updated: Last Updated
+      no_tickets: You have not submitted any support requests yet.
+      page_title: My Support Requests
+      status: Status
+      subject: Subject
+      submit_new: Submit a new request
+      view: View Thread
+    new:
+      page_title: Support and Feedback
+    show:
+      back_to_list: My Requests
+      category: Category
+      conversation: Conversation History
+      created: Created
+      details_legend: Ticket Details
+      email: Email
+      help_center: Help Center
+      initial_request: Initial Request
+      mark_resolved: Mark request as resolved
+      reply_legend: Add a reply to this request
+      reply_placeholder: Type your reply or additional details here...
+      requester: Requester
+      resolved_confirm: Are you sure you want to mark this request as resolved?
+      resolved_note: This ticket has been marked as resolved. Posting a new reply
+        will reopen it.
+      staff_badge: AO3 Support Team
+      status: Status
+      submit_reply: Submit Reply
+      ticket_title: 'Ticket #%{id}: %{summary}'
+      user_badge: You
+    statuses:
+      answered: Answered
+      closed: Resolved
+      open: Open
+      pending: Pending
+    type:
+      abuse: Policy Questions & Abuse Reports
+      technical: Technical Support & Feedback

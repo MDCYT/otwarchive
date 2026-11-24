@@ -1,36 +1,39 @@
 class Admin::SupportTicketsController < Admin::BaseController
-  before_action :check_support_permission
+  before_action :admin_only
   before_action :find_ticket, only: [:show, :reply, :update_status, :assign]
 
   def index
-    @page_title = t("admin.support_tickets.index.page_title")
+    @page_title = t("admin.support_tickets.index.page_title", default: "Support Tickets Dashboard")
     @status_filter = params[:status].presence || "all"
-    
+    @type_filter = params[:type].presence || "all"
+
+    base_scope = Feedback.all
+    if @type_filter != "all" && Feedback::TICKET_TYPES.include?(@type_filter)
+      base_scope = base_scope.where(ticket_type: @type_filter)
+    end
+
+    @tickets = base_scope.order(updated_at: :desc)
+    if @status_filter != "all" && Feedback::STATUSES.include?(@status_filter)
+      @tickets = @tickets.where(status: @status_filter)
+    end
+
     @counts = {
-      all: Feedback.count,
-      open: Feedback.where(status: "open").count,
-      pending: Feedback.where(status: "pending").count,
-      answered: Feedback.where(status: "answered").count,
-      closed: Feedback.where(status: "closed").count
+      all: base_scope.count,
+      open: base_scope.where(status: "open").count,
+      pending: base_scope.where(status: "pending").count,
+      answered: base_scope.where(status: "answered").count,
+      closed: base_scope.where(status: "closed").count,
+      technical: Feedback.where(ticket_type: [nil, "technical"]).count,
+      abuse: Feedback.where(ticket_type: "abuse").count
     }
-
-    @tickets = case @status_filter
-               when "open" then Feedback.where(status: "open")
-               when "pending" then Feedback.where(status: "pending")
-               when "answered" then Feedback.where(status: "answered")
-               when "closed" then Feedback.where(status: "closed")
-               else Feedback.all
-               end
-
-    @tickets = @tickets.order(updated_at: :desc).paginate(page: params[:page], per_page: 25)
   end
 
   def show
-    @page_title = t("admin.support_tickets.show.page_title", id: @feedback.id, summary: @feedback.summary)
+    @page_title = "[Ticket ##{@feedback.id}] #{@feedback.summary}"
     @replies = @feedback.feedback_replies
     @reply = FeedbackReply.new
-    @admins = Admin.all
-    @user = User.find_by(id: @feedback.user_id) || User.find_by(login: @feedback.username) || User.find_by(email: @feedback.email)
+    @user = @feedback.user || (@feedback.username.present? ? User.find_by(login: @feedback.username) : nil) || (@feedback.email.present? ? User.find_by(email: @feedback.email) : nil)
+    @admins = Admin.all.order(:login)
   end
 
   def reply
@@ -38,7 +41,7 @@ class Admin::SupportTicketsController < Admin::BaseController
     is_internal = params[:feedback_reply]&.[](:is_internal) == "1"
 
     if comment_text.blank?
-      flash[:error] = t("support_tickets.flash.reply_empty")
+      flash[:error] = t("support_tickets.flash.reply_empty", default: "Response cannot be blank.")
       redirect_to admin_support_ticket_path(@feedback) and return
     end
 
@@ -59,12 +62,12 @@ class Admin::SupportTicketsController < Admin::BaseController
         rescue => e
           Rails.logger.error("Error sending staff reply email: #{e.message}")
         end
-        flash[:notice] = t("admin.support_tickets.flash.reply_success")
+        flash[:notice] = t("admin.support_tickets.flash.reply_success", default: "Reply sent to user.")
       else
-        flash[:notice] = t("admin.support_tickets.flash.note_success")
+        flash[:notice] = t("admin.support_tickets.flash.note_success", default: "Internal note added.")
       end
     else
-      flash[:error] = t("support_tickets.flash.reply_error")
+      flash[:error] = t("support_tickets.flash.reply_error", default: "Could not post reply.")
     end
 
     redirect_to admin_support_ticket_path(@feedback)
@@ -73,34 +76,29 @@ class Admin::SupportTicketsController < Admin::BaseController
   def update_status
     if Feedback::STATUSES.include?(params[:status])
       @feedback.update(status: params[:status])
-      flash[:notice] = t("admin.support_tickets.flash.status_updated", status: @feedback.status_label)
-    else
-      flash[:error] = t("admin.support_tickets.flash.invalid_status")
+      flash[:notice] = t("admin.support_tickets.flash.status_updated", status: @feedback.status_label, default: "Status updated to %{status}.")
     end
     redirect_to admin_support_ticket_path(@feedback)
   end
 
   def assign
-    admin = Admin.find_by(id: params[:admin_id])
-    @feedback.update(assigned_to: admin)
-    flash[:notice] = admin ? t("admin.support_tickets.flash.assigned", admin: admin.login) : t("admin.support_tickets.flash.unassigned")
+    admin_id = params[:admin_id].presence
+    if admin_id == "unassign"
+      @feedback.update(assigned_to_id: nil)
+      flash[:notice] = t("admin.support_tickets.flash.unassigned", default: "Ticket unassigned.")
+    elsif admin_id.present? && (admin = Admin.find_by(id: admin_id))
+      @feedback.update(assigned_to_id: admin.id)
+      flash[:notice] = t("admin.support_tickets.flash.assigned", admin: admin.login, default: "Ticket assigned to %{admin}.")
+    end
     redirect_to admin_support_ticket_path(@feedback)
   end
 
   private
 
-  def check_support_permission
-    policy = SupportTicketPolicy.new(current_admin, Feedback)
-    unless policy.index?
-      flash[:error] = t("admin.support_tickets.flash.permission_denied")
-      redirect_to admin_path and return
-    end
-  end
-
   def find_ticket
     @feedback = Feedback.find_by(id: params[:id])
     unless @feedback
-      flash[:error] = t("support_tickets.flash.not_found")
+      flash[:error] = t("support_tickets.flash.not_found", default: "Ticket not found.")
       redirect_to admin_support_tickets_path and return
     end
   end

@@ -31,8 +31,9 @@
     <li class="module group">
       <h4 class="heading"><%= t(".contact_us.header") %></h4>
       <ul class="menu">
-        <li><%= link_to t(".contact_us.pac"), new_abuse_report_path %></li>
-        <li><%= link_to t(".contact_us.support"), new_feedback_report_path %></li>
+        <% is_support_domain = request.host.match?(/(support|soporte)/) %>
+        <li><%= link_to t(".contact_us.pac"), (is_support_domain ? "/tickets/new?type=abuse" : "https://support.libreria.org.pe/tickets/new?type=abuse") %></li>
+        <li><%= link_to t(".contact_us.support"), (is_support_domain ? "/tickets/new?type=technical" : "https://support.libreria.org.pe/tickets/new?type=technical") %></li>
         <li><%= link_to t(".contact_us.donate_or_volunteer"), donate_path %></li>
       </ul>
     </li>
