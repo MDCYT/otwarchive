@@ -1,0 +1,69 @@
+<div class="admin">
+  <h2 class="heading">Panel de Soporte - Solicitudes</h2>
+
+  <ul class="navigation actions" role="navigation">
+    <li><%= span_if_current "Todos (#{@counts[:all]})", admin_support_tickets_path %></li>
+    <li><%= span_if_current "Abiertos (#{@counts[:open]})", admin_support_tickets_path(status: 'open') %></li>
+    <li><%= span_if_current "En espera (#{@counts[:pending]})", admin_support_tickets_path(status: 'pending') %></li>
+    <li><%= span_if_current "Respondidos (#{@counts[:answered]})", admin_support_tickets_path(status: 'answered') %></li>
+    <li><%= span_if_current "Resueltos (#{@counts[:closed]})", admin_support_tickets_path(status: 'closed') %></li>
+  </ul>
+
+  <% if @tickets.any? %>
+    <div class="wrapper">
+      <table summary="Lista de tickets de soporte para el equipo de administración">
+        <caption>Tickets de soporte (<%= @status_filter.capitalize %>)</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width:60px;">ID</th>
+            <th scope="col" style="width:180px;">Solicitante</th>
+            <th scope="col">Asunto</th>
+            <th scope="col" style="width:140px;">Categoría</th>
+            <th scope="col" style="width:110px;">Estado</th>
+            <th scope="col" style="width:130px;">Asignado a</th>
+            <th scope="col" style="width:120px;">Fecha</th>
+            <th scope="col" style="width:80px;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tickets.each do |ticket| %>
+            <tr>
+              <td><strong>#<%= ticket.id %></strong></td>
+              <td>
+                <% if ticket.username.present? %>
+                  <%= link_to ticket.username, user_path(ticket.username) rescue ticket.username %><br>
+                <% end %>
+                <small style="color:#666;"><%= ticket.email %></small>
+              </td>
+              <td>
+                <%= link_to strip_tags(ticket.summary), admin_support_ticket_path(ticket), style: "font-weight:bold;" %>
+              </td>
+              <td><%= ticket.category.presence || "General" %></td>
+              <td>
+                <% badge_color = case ticket.status
+                   when 'open' then '#2e7d32'
+                   when 'pending' then '#e65100'
+                   when 'answered' then '#0d47a1'
+                   when 'closed' then '#616161'
+                   else '#2e7d32' end %>
+                <span style="display:inline-block; padding:2px 7px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
+                  <%= ticket.status_label %>
+                </span>
+              </td>
+              <td>
+                <%= ticket.assigned_to&.login || content_tag(:span, "Sin asignar", style: "color:#888; font-style:italic;") %>
+              </td>
+              <td><%= l(ticket.created_at, format: :short) %></td>
+              <td>
+                <%= link_to "Ver/Atender", admin_support_ticket_path(ticket), class: "actions" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= will_paginate @tickets %>
+  <% else %>
+    <p class="notice" style="margin-top:1.5em;">No hay tickets de soporte en esta vista.</p>
+  <% end %>
+</div>

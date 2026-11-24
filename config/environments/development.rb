@@ -4,13 +4,13 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.
-  config.enable_reloading = true
+  config.enable_reloading = false
 
   # Do not eager load code on boot.
-  config.eager_load = false
+  config.eager_load = true
 
-  # Show full error reports.
-  config.consider_all_requests_local = true
+  # Hide internal debug error reports and routes from public users (render AO3 404/500 pages instead).
+  config.consider_all_requests_local = false
 
   # Enable server timing.
   config.server_timing = true
@@ -37,8 +37,9 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  # Raise delivery errors and perform real email deliveries via SMTP
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.perform_deliveries = true
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
@@ -59,10 +60,10 @@ Rails.application.configure do
   config.active_job.verbose_enqueue_logs = true
 
   # Raises error for missing translations.
-  config.i18n.raise_on_missing_translations = true
+  config.i18n.raise_on_missing_translations = false
 
   # Annotate rendered view with file names.
-  config.action_view.annotate_rendered_view_with_filenames = true
+  config.action_view.annotate_rendered_view_with_filenames = false
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
@@ -74,8 +75,14 @@ Rails.application.configure do
   config.generators.apply_rubocop_autocorrect_after_generate!
 
   # Make it clear we are on Dev
-  config.rack_dev_mark.enable = true
+  config.rack_dev_mark.enable = false
   config.rack_dev_mark.theme = [:title, Rack::DevMark::Theme::GithubForkRibbon.new(position: "left", color: "green", fixed: "true")]
+
+  # Allow all hosts and origins so reverse proxies / direct VPS IP work seamlessly
+  config.hosts << "libreria.mdcdev.me"
+  config.hosts << /.*/
+  config.assume_ssl = true
+  config.action_controller.forgery_protection_origin_check = false
 
   # Enable Bullet gem to monitor application performance
   config.after_initialize do

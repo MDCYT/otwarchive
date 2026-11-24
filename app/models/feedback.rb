@@ -2,9 +2,13 @@
 class Feedback < ApplicationRecord
   attr_accessor :ip_address, :referer, :site_skin
 
-  # NOTE: this has NOTHING to do with the Comment class!
-  # This is just the name of the text field in the Feedback
-  # class which holds the user's comments.
+  has_many :feedback_replies, dependent: :destroy
+  belongs_to :user, optional: true
+  belongs_to :assigned_to, class_name: "Admin", foreign_key: "assigned_to_id", optional: true
+
+  STATUSES = %w[open pending answered closed].freeze
+  PRIORITIES = %w[low normal high urgent].freeze
+
   validates_presence_of :comment
   validates_presence_of :summary
   validates_presence_of :language
@@ -13,6 +17,36 @@ class Feedback < ApplicationRecord
     too_long: ts("must be less than %{max} characters long.", max: ArchiveConfig.FEEDBACK_SUMMARY_MAX_DISPLAYED)
 
   validate :check_for_spam
+
+  scope :by_status, ->(s) { where(status: s) if s.present? && STATUSES.include?(s) }
+  scope :recent, -> { order(updated_at: :desc) }
+
+  def open?
+    status == "open"
+  end
+
+  def closed?
+    status == "closed"
+  end
+
+  def answered?
+    status == "answered"
+  end
+
+  def pending?
+    status == "pending"
+  end
+
+  def status_label
+    case status
+    when "open" then "Abierto"
+    when "pending" then "En espera"
+    when "answered" then "Respondido"
+    when "closed" then "Resuelto"
+    else (status || "Abierto").titleize
+    end
+  end
+
   def check_for_spam
     approved = logged_in_with_matching_email? || !AkismetClient.spam?(akismet_attributes)
     errors.add(:base, ts("This report looks like spam to our system!")) unless approved
@@ -23,8 +57,6 @@ class Feedback < ApplicationRecord
   end
 
   def akismet_attributes
-    # If the user is logged in and we're sending info to Akismet, we can assume
-    # the email does not match.
     role = User.current_user.present? ? "user-with-nonmatching-email" : "guest"
     {
       comment_type: "contact-form",
@@ -46,18 +78,16 @@ class Feedback < ApplicationRecord
 
   def email_and_send
     UserMailer.feedback(id).deliver_later
+    begin
+      SupportMailer.new_ticket_alert(self).deliver_later
+    rescue => e
+      Rails.logger.error("Support notification alert failed: #{e.message}")
+    end
     send_report
   end
 
   def rollout_string
-    string = ""
-    # ES UPGRADE TRANSITION #
-    # Remove ES version logic, but leave this method for future rollout use
-    # string << if Feedback.use_new_search?
-    #             "ES 6.0"
-    #           else
-    #             "ES 0.90"
-    #           end
+    ""
   end
 
   def send_report

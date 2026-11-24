@@ -1,0 +1,63 @@
+<div class="support-home">
+  <h2 class="heading">Centro de Ayuda y Soporte</h2>
+
+  <ul class="navigation actions" role="navigation">
+    <li><%= link_to "Enviar una solicitud", new_ticket_path %></li>
+    <li><%= link_to "Mis solicitudes (#{@open_tickets_count})", tickets_path %></li>
+    <li><%= link_to "Preguntas Frecuentes (FAQ)", archive_faqs_path %></li>
+    <li><%= link_to "Volver al Archivo", "https://libreria.org.pe" %></li>
+  </ul>
+
+  <div class="module" style="background:#fff; border:1px solid #ddd; padding:2em; margin:1.5em 0; text-align:center; border-radius:4px;">
+    <h3 class="heading" style="font-size:1.6em; margin-bottom:0.4em; color:#900;">¿Cómo podemos ayudarte hoy?</h3>
+    <p style="font-size:1.1em; color:#555; max-width:640px; margin:0 auto 1.5em; line-height:1.5;">
+      Encuentra guías y respuestas a las dudas más comunes sobre <%= ArchiveConfig.APP_NAME %>, o contacta directamente con nuestro equipo de atención al usuario.
+    </p>
+
+    <%= form_tag archive_faqs_path, method: :get, class: "search", style: "display:inline-block; width:100%; max-width:520px;" do %>
+      <div style="display:flex; gap:8px;">
+        <%= text_field_tag :query, params[:query], placeholder: "Buscar en el centro de ayuda...", style: "flex:1; padding:8px 12px; font-size:1em; border:1px solid #bbb; border-radius:3px;" %>
+        <%= submit_tag "Buscar", class: "button", style: "padding:8px 18px; font-size:1em;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <h3 class="landmark heading">Categorías de ayuda</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.2em; margin-bottom:2em;">
+    <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Cuentas e Inicios de sesión</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">Invitaciones, problemas de contraseña, cambio de correo registrado, gestión de perfiles y pseuds.</p>
+      <p class="actions"><%= link_to "Ver guías de cuenta", archive_faq_path("your-account") rescue link_to("Ver preguntas", archive_faqs_path) %></p>
+    </div>
+
+    <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Obras, Capítulos y Series</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">Publicación de historias, edición de capítulos, creación de series, colecciones y orfanato de obras.</p>
+      <p class="actions"><%= link_to "Ver guías de obras", archive_faq_path("posting-and-editing") rescue link_to("Ver preguntas", archive_faqs_path) %></p>
+    </div>
+
+    <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Etiquetas y Filtros</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">Búsqueda avanzada, filtros de relaciones, etiquetas canónicas y dudas del sistema de wrangling.</p>
+      <p class="actions"><%= link_to "Ver guías de etiquetas", archive_faq_path("tags") rescue link_to("Ver preguntas", archive_faqs_path) %></p>
+    </div>
+
+    <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Normas y Privacidad</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">Términos de servicio (TOS), políticas de contenido, prevención de spam y cómo reportar abusos.</p>
+      <p class="actions"><%= link_to "Términos de Servicio", tos_path rescue link_to("Ver información", archive_faqs_path) %></p>
+    </div>
+
+    <div class="module" style="background:#fff; border:1px solid #ccc; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Preguntas Frecuentes</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">Respuestas oficiales y detalladas a las consultas más comunes planteadas por la comunidad.</p>
+      <p class="actions"><%= link_to "Explorar todas las FAQs", archive_faqs_path %></p>
+    </div>
+
+    <div class="module" style="background:#fdf8f8; border:1px solid #900; padding:1.2em; border-radius:4px;">
+      <h4 class="heading" style="color:#900; margin-top:0;">Atención Personalizada</h4>
+      <p style="font-size:0.95em; color:#444; min-height:45px;">¿No encuentras lo que necesitas? Envía una solicitud directa y nuestro equipo te responderá.</p>
+      <p class="actions"><%= link_to "Enviar una Solicitud", new_ticket_path, class: "button submit" %></p>
+    </div>
+  </div>
+</div>

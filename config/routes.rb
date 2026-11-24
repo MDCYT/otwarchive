@@ -186,6 +186,14 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :support_tickets do
+      member do
+        post :reply
+        patch :update_status
+        patch :assign
+      end
+    end
+
     resources :activities, only: [:index, :show]
     resources :banners do
       member do
@@ -723,6 +731,31 @@ Rails.application.routes.draw do
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
+    # Support Subdomain & Portal
+  constraints host: /soporte/ do
+    root to: "support#index", as: :support_root
+    resources :tickets, controller: "support_tickets" do
+      member do
+        post :reply
+        patch :close
+      end
+    end
+    get "faq", to: "support#faq", as: :support_faq
+    get "my_tickets", to: "support_tickets#index", as: :my_support_tickets
+  end
+
+  scope path: "portal_soporte", as: "portal_soporte" do
+    root to: "support#index"
+    resources :tickets, controller: "support_tickets" do
+      member do
+        post :reply
+        patch :close
+      end
+    end
+    get "faq", to: "support#faq"
+    get "my_tickets", to: "support_tickets#index"
+  end
+
   root to: "home#index"
 
   # See how all your routes lay out with "rake routes"

@@ -28,10 +28,9 @@ volumes:
 services:
   db:
     image: mariadb:10.5.4-focal
+    restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=change_me
-    ports:
-      - "3306:3306"
     command:
       [
         "mysqld",
@@ -41,33 +40,28 @@ services:
       - my-datavolume:/var/lib/mysql:rw
   redis:
     image: redis:7
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
     volumes:
       - redis-data:/var/lib/redis:rw
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.3.0
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-      - "9400:9400"
+    restart: unless-stopped
     volumes:
       - esdata1:/usr/share/elasticsearch/data:rw
     environment:
       - transport.host=localhost
       - bootstrap.memory_lock=false
-      - "ES_JAVA_OPTS=-Xms1500m -Xmx1500m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx768m"
       - discovery.type=single-node
       # Silence "security features are not enabled" warnings
       # https://github.com/elastic/elasticsearch/issues/78500
       - xpack.security.enabled=false
   mc:
     image: memcached:1.5
-    ports:
-      - "11211:11211"
+    restart: unless-stopped
   web:
-    profiles:
-      - dev
+    image: otwarchive-app:latest
+    restart: unless-stopped
     build:
       context: .
       dockerfile: ./config/docker/Dockerfile
@@ -82,7 +76,7 @@ services:
     volumes:
       - .:/otwa
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       - db
       - redis
@@ -93,8 +87,8 @@ services:
     stdin_open: true
     tty: true
   resque:
-    profiles:
-      - dev
+    image: otwarchive-app:latest
+    restart: unless-stopped
     build:
       context: .
       dockerfile: ./config/docker/Dockerfile

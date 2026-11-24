@@ -1,0 +1,11 @@
+<% content_for :message do %>
+  <p>El usuario ha respondido al <strong>[Ticket #<%= @feedback.id %>] <%= strip_tags(@feedback.summary) %></strong>:</p>
+  <div style="background:#f9f9f9; border-left:4px solid #900; padding:12px; margin:16px 0;">
+    <p><strong><%= @reply.author_name %>:</strong></p>
+    <%= raw sanitize_field(@reply, :comment) %>
+  </div>
+  <p><a href="<%= @admin_url %>">Ver conversación y responder en el Panel de Administración</a></p>
+<% end %>
+<% content_for :sent_at do %>
+  <%= l(Time.current) %>
+<% end %>

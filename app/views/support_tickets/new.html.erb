@@ -1,0 +1,75 @@
+<div class="support-new-ticket">
+  <h2 class="heading">Enviar una solicitud de soporte</h2>
+
+  <ul class="navigation actions" role="navigation">
+    <li><%= link_to "Centro de Ayuda", root_path %></li>
+    <li><%= link_to "Mis solicitudes", tickets_path %></li>
+  </ul>
+
+  <div class="userstuff" style="margin-bottom:1.5em;">
+    <p>Por favor completa el formulario a continuación con todos los detalles posibles para que el equipo de soporte pueda asistirte con rapidez.</p>
+  </div>
+
+  <%= error_messages_for :feedback %>
+
+  <%= form_for(@feedback, url: tickets_path, html: {class: "post feedback"}) do |f| %>
+    <fieldset>
+      <legend>Información de contacto</legend>
+      <dl>
+        <dt><%= f.label :username, "Nombre de usuario en AO3" %></dt>
+        <dd>
+          <%= f.text_field :username, value: (@feedback.username || current_user&.login) %>
+          <p class="footnote">Si tienes una cuenta en el Archivo, indícala para localizar tu usuario.</p>
+        </dd>
+
+        <dt class="required"><%= f.label :email, "Correo electrónico" %></dt>
+        <dd class="required">
+          <%= f.text_field :email, value: (@feedback.email || current_user&.email), size: 60, required: true %>
+          <p class="footnote">Te enviaremos la confirmación y las respuestas del equipo a esta dirección.</p>
+        </dd>
+
+        <dt class="required"><%= f.label :category, "Categoría de la consulta" %></dt>
+        <dd class="required">
+          <%= f.select :category, [
+            ["Cuentas e Inicio de sesión", "Cuentas e Inicio de sesión"],
+            ["Obras, Capítulos y Series", "Obras, Capítulos y Series"],
+            ["Etiquetas y Búsqueda", "Etiquetas y Búsqueda"],
+            ["Normas de la Comunidad y Términos de Servicio", "Normas de la Comunidad y Términos de Servicio"],
+            ["Problemas Técnicos o Errores de la Web", "Problemas Técnicos o Errores de la Web"],
+            ["Otras Consultas", "Otras Consultas"]
+          ], { prompt: "Selecciona una categoría..." }, { required: true } %>
+        </dd>
+
+        <dt class="required"><%= f.label :language, "Idioma de preferencia" %></dt>
+        <dd class="required">
+          <%= f.select :language, language_options_for_select(@support_languages, "name"),
+                { selected: @feedback.language || Language.default&.name || "English" } %>
+        </dd>
+      </dl>
+    </fieldset>
+
+    <fieldset>
+      <legend>Detalles de tu solicitud</legend>
+      <dl>
+        <dt class="required"><%= f.label :summary, "Asunto o título breve" %></dt>
+        <dd class="required">
+          <%= f.text_field :summary, size: 60, required: true, class: "observe_textlength" %>
+          <%= generate_countdown_html("feedback_summary", ArchiveConfig.FEEDBACK_SUMMARY_MAX_DISPLAYED) rescue nil %>
+        </dd>
+
+        <dt class="required"><%= f.label :comment, "Mensaje o descripción detallada" %></dt>
+        <dd class="required">
+          <%= f.text_area :comment, cols: 60, rows: 8, required: true, placeholder: "Describe tu problema o consulta con claridad. Incluye enlaces relevantes (a tu obra, perfil, etc.) si corresponde." %>
+        </dd>
+      </dl>
+    </fieldset>
+
+    <fieldset>
+      <legend>Confirmar y enviar</legend>
+      <p class="submit actions">
+        <%= f.submit "Enviar solicitud de soporte", data: { disable_with: "Enviando solicitud..." } %>
+        <%= link_to "Cancelar", root_path, class: "cancel" %>
+      </p>
+    </fieldset>
+  <% end %>
+</div>

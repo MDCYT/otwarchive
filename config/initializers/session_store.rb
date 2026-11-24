@@ -10,7 +10,17 @@ end
 
 # Be sure to restart your server when you modify this file.
 
-Otwarchive::Application.config.session_store :force_signed_cookie_store, key: '_otwarchive_session', expire_after: ArchiveConfig.DEFAULT_SESSION_LENGTH_IN_WEEKS.weeks
+cookie_domain = if ArchiveConfig.APP_HOST.present? && ArchiveConfig.APP_HOST.include?('.')
+  '.' + ArchiveConfig.APP_HOST
+else
+  :all
+end
+
+Otwarchive::Application.config.session_store :force_signed_cookie_store,
+  key: '_otwarchive_session',
+  expire_after: ArchiveConfig.DEFAULT_SESSION_LENGTH_IN_WEEKS.weeks,
+  domain: cookie_domain,
+  tld_length: 2
 
 # Use the database for sessions instead of the cookie-based default,
 # which shouldn't be used to store highly confidential information

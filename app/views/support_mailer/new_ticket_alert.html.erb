@@ -1,0 +1,17 @@
+<% content_for :message do %>
+  <p>Se ha recibido una nueva solicitud de soporte:</p>
+  <ul>
+    <li><strong>Ticket ID:</strong> #<%= @feedback.id %></li>
+    <li><strong>Solicitante:</strong> <%= @feedback.username.presence || "Anónimo / No registrado" %> (<%= @feedback.email %>)</li>
+    <li><strong>Asunto:</strong> <%= strip_tags(@feedback.summary) %></li>
+    <li><strong>Categoría:</strong> <%= @feedback.category.presence || "General" %></li>
+    <li><strong>Idioma:</strong> <%= @feedback.language %></li>
+  </ul>
+  <div style="background:#f9f9f9; border-left:4px solid #900; padding:12px; margin:16px 0;">
+    <%= raw sanitize_field(@feedback, :comment) %>
+  </div>
+  <p><a href="<%= @admin_url %>">Ver y responder en el Panel de Administración</a></p>
+<% end %>
+<% content_for :sent_at do %>
+  <%= l(Time.current) %>
+<% end %>

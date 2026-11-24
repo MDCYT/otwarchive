@@ -1,0 +1,68 @@
+<div class="support-my-tickets">
+  <h2 class="heading">Mis Solicitudes de Soporte</h2>
+
+  <ul class="navigation actions" role="navigation">
+    <li><%= link_to "Nueva solicitud", new_ticket_path %></li>
+    <li><%= link_to "Centro de Ayuda", root_path %></li>
+    <li><%= link_to "Volver al Archivo", "https://libreria.org.pe" %></li>
+  </ul>
+
+  <% if @tickets.any? %>
+    <div class="wrapper">
+      <table summary="Lista de solicitudes de soporte enviadas">
+        <caption>Tus solicitudes registradas</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width:70px;">ID</th>
+            <th scope="col">Asunto</th>
+            <th scope="col" style="width:150px;">Categoría</th>
+            <th scope="col" style="width:140px;">Fecha</th>
+            <th scope="col" style="width:120px;">Estado</th>
+            <th scope="col" style="width:100px;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tickets.each do |ticket| %>
+            <tr>
+              <td><strong>#<%= ticket.id %></strong></td>
+              <td>
+                <%= link_to strip_tags(ticket.summary), ticket_path(ticket), style: "font-weight:bold;" %>
+              </td>
+              <td><%= ticket.category.presence || "General" %></td>
+              <td><%= l(ticket.created_at, format: :short) %></td>
+              <td>
+                <% badge_color = case ticket.status
+                   when 'open' then '#2e7d32'
+                   when 'pending' then '#e65100'
+                   when 'answered' then '#0d47a1'
+                   when 'closed' then '#616161'
+                   else '#2e7d32' end %>
+                <span style="display:inline-block; padding:2px 8px; border-radius:3px; background:<%= badge_color %>; color:#fff; font-size:0.85em; font-weight:bold;">
+                  <%= ticket.status_label %>
+                </span>
+              </td>
+              <td>
+                <%= link_to "Ver detalle", ticket_path(ticket), class: "actions" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="module" style="background:#fff; border:1px solid #ddd; padding:2em; margin:1.5em 0; text-align:center;">
+      <h3 class="heading" style="color:#555;">No se encontraron solicitudes registradas</h3>
+      <p style="margin:1em 0;">No tienes solicitudes activas asociadas a tu sesión actual.</p>
+      <% unless logged_in? %>
+        <p style="background:#fdf8f8; border:1px solid #e0c0c0; padding:12px; max-width:500px; margin:1em auto; border-radius:3px;">
+          ¿Enviaste un ticket con tu cuenta de AO3?
+          <%= link_to "Inicia sesión con tu cuenta de AO3", new_user_session_path, style: "font-weight:bold; color:#900;" %>
+          para ver todo tu historial de soporte.
+        </p>
+      <% end %>
+      <p class="actions" style="margin-top:1.5em;">
+        <%= link_to "Crear una nueva solicitud de soporte", new_ticket_path, class: "button submit" %>
+      </p>
+    </div>
+  <% end %>
+</div>
