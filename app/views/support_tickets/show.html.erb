@@ -91,7 +91,7 @@
           <%= f.text_area :comment, rows: 6, cols: 60, required: true, placeholder: t("support_tickets.show.reply_placeholder", default: "Type your reply or additional details here..."), style: "width:100%; box-sizing:border-box; margin-bottom:10px;" %>
         </p>
         <p class="submit actions" style="display:flex; justify-content:space-between; align-items:center;">
-          <%= f.submit t("support_tickets.show.submit_reply", default: "Submit Reply") %>
+          <%= f.submit t("support_tickets.show.submit_reply", default: "Submit Reply"), data: { disable_with: "Submitting..." } %>
           <%= link_to t("support_tickets.show.mark_resolved", default: "Mark request as resolved"), close_ticket_path(@feedback), method: :patch, data: { confirm: t("support_tickets.show.resolved_confirm", default: "Are you sure you want to mark this request as resolved?") }, class: "action", style: "color:#777; font-size:0.9em;" %>
         </p>
       <% end %>

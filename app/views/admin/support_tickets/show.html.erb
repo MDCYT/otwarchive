@@ -107,7 +107,7 @@
               ], "answered") %>
             </div>
             <div>
-              <%= f.submit t("admin.support_tickets.show.send_reply", default: "Submit Response") %>
+              <%= f.submit t("admin.support_tickets.show.send_reply", default: "Submit Response"), data: { disable_with: "Submitting..." } %>
             </div>
           </div>
         <% end %>

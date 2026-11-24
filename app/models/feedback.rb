@@ -26,7 +26,7 @@ class Feedback < ApplicationRecord
     self.reported_url = reported_url[0..2079] if reported_url.present?
   end
 
-  validate :check_for_spam
+  validate :check_for_spam, on: :create
 
   scope :by_status, ->(s) { where(status: s) if s.present? && STATUSES.include?(s) }
   scope :by_type, ->(t) { where(ticket_type: t) if t.present? && TICKET_TYPES.include?(t) }

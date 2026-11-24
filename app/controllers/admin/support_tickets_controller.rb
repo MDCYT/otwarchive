@@ -37,11 +37,21 @@ class Admin::SupportTicketsController < Admin::BaseController
   end
 
   def reply
-    comment_text = params[:feedback_reply]&.[](:comment)
+    comment_text = params[:feedback_reply]&.[](:comment)&.strip
     is_internal = params[:feedback_reply]&.[](:is_internal) == "1"
 
     if comment_text.blank?
       flash[:error] = t("support_tickets.flash.reply_empty", default: "Response cannot be blank.")
+      redirect_to admin_support_ticket_path(@feedback) and return
+    end
+
+    # Duplicate prevention: if the exact same reply was submitted within 2 minutes, ignore and redirect
+    recent_dup = @feedback.feedback_replies
+      .where(admin_id: current_admin.id, comment: comment_text)
+      .where("created_at > ?", 2.minutes.ago)
+      .first
+    if recent_dup
+      flash[:notice] = t("admin.support_tickets.flash.reply_success", default: "Reply sent to user.")
       redirect_to admin_support_ticket_path(@feedback) and return
     end
 
@@ -56,7 +66,7 @@ class Admin::SupportTicketsController < Admin::BaseController
     if @reply.persisted?
       unless is_internal
         new_status = params[:next_status].presence || "answered"
-        @feedback.update(status: new_status)
+        @feedback.update_columns(status: new_status) if Feedback::STATUSES.include?(new_status)
         begin
           SupportMailer.staff_replied(@feedback, @reply).deliver_later
         rescue => e

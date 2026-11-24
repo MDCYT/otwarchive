@@ -77,13 +77,24 @@ class SupportTicketsController < ApplicationController
   end
 
   def reply
-    comment_text = params[:feedback_reply]&.[](:comment)
+    comment_text = params[:feedback_reply]&.[](:comment)&.strip
     if comment_text.blank?
       flash[:error] = t("support_tickets.flash.reply_empty", default: "Response cannot be blank.")
       redirect_to ticket_path(@feedback) and return
     end
 
     author = current_user ? current_user.login : (@feedback.username.presence || @feedback.email)
+
+    # Duplicate prevention
+    recent_dup = @feedback.feedback_replies
+      .where(author_name: author, comment: comment_text)
+      .where("created_at > ?", 2.minutes.ago)
+      .first
+    if recent_dup
+      flash[:notice] = t("support_tickets.flash.reply_success", default: "Your reply has been posted.")
+      redirect_to ticket_path(@feedback) and return
+    end
+
     @reply = @feedback.feedback_replies.create(
       user_id: current_user&.id,
       author_name: author,
@@ -92,7 +103,7 @@ class SupportTicketsController < ApplicationController
     )
 
     if @reply.persisted?
-      @feedback.update(status: "pending") if @feedback.answered? || @feedback.closed?
+      @feedback.update_columns(status: "pending") if @feedback.answered? || @feedback.closed?
       flash[:notice] = t("support_tickets.flash.reply_success", default: "Your reply has been posted.")
     else
       flash[:error] = t("support_tickets.flash.reply_error", default: "Could not send your reply. Please try again.")
