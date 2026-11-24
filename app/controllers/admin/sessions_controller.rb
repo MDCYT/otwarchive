@@ -2,7 +2,7 @@
 class Admin
   # Handle admin session authentication
   class SessionsController < Devise::SessionsController
-    before_action :user_logout_required, except: :destroy
+    before_action :switch_from_user_to_admin, only: [:new, :create]
 
     prepend_before_action :authenticate_with_totp_two_factor,
                           if: -> { action_name == "create" && totp_two_factor_enabled? }
@@ -13,6 +13,30 @@ class Admin
     def confirm_logout
       # If the user is already logged out, we just redirect to the front page.
       redirect_to root_path unless admin_signed_in?
+    end
+
+    # DELETE /admin/logout
+    def destroy
+      if current_admin
+        current_admin.forget_me! rescue nil
+      end
+
+      domains = [nil, :all, ".#{ArchiveConfig.APP_HOST}", ArchiveConfig.APP_HOST].compact.uniq
+      domains.each do |dom|
+        opts = dom == :all ? { domain: :all } : (dom ? { domain: dom } : {})
+        cookies.delete(:remember_admin_token, **opts)
+        cookies.delete("remember_admin_token", **opts)
+        cookies.delete(:admin_credentials, **opts)
+        cookies.delete("admin_credentials", **opts)
+        cookies.delete(:_otwarchive_session, **opts)
+        cookies.delete("_otwarchive_session", **opts)
+      end
+
+      sign_out(:admin) rescue nil
+      warden.logout(:admin) rescue nil
+      reset_session
+      set_flash_message! :notice, :signed_out
+      redirect_to root_path
     end
 
     # Two-Factor Authentication
@@ -27,6 +51,23 @@ class Admin
     end
   
     private
+
+    # Seamlessly switch from user session to admin session without error loops
+    def switch_from_user_to_admin
+      if user_signed_in?
+        current_user.forget_me! rescue nil
+        domains = [nil, :all, ".#{ArchiveConfig.APP_HOST}", ArchiveConfig.APP_HOST].compact.uniq
+        domains.each do |dom|
+          opts = dom == :all ? { domain: :all } : (dom ? { domain: dom } : {})
+          cookies.delete(:remember_user_token, **opts)
+          cookies.delete("remember_user_token", **opts)
+          cookies.delete(:user_credentials, **opts)
+          cookies.delete("user_credentials", **opts)
+        end
+        sign_out(:user) rescue nil
+        warden.logout(:user) rescue nil
+      end
+    end
   
     def valid_totp_attempt?(admin)
       admin.validate_and_consume_otp!(params[:totp_attempt]) ||
